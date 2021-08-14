@@ -44,7 +44,7 @@ public class ProductController {
         return ResponseEntity.ok("Product deleted successfully");
     }
 
-    @GetMapping("/formato/{formato}")
+    @GetMapping("/format/{formato}")
     public ResponseEntity<List<Prodotto>> getFormato(@PathVariable Formato formato) {
         return ResponseEntity.ok(prodottoService.getFormato(formato));
     }

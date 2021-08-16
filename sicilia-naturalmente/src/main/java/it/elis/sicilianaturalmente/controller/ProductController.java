@@ -60,4 +60,9 @@ public class ProductController {
         return ResponseEntity.ok(prodottoService.orderByPrice());
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @GetMapping("/research/{titolo}")
+    public ResponseEntity<List<Prodotto>> getProductByRegex(@PathVariable String titolo) {
+        return ResponseEntity.ok(prodottoService.getByRegex(titolo));
+    }
 }

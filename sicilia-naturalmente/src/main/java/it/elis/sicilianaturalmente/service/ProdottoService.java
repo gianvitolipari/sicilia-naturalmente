@@ -12,4 +12,5 @@ public interface ProdottoService {
     public void deleteProduct(String titolo);
     public List<Prodotto> getFormato(Formato formato);
     public List<Prodotto> orderByPrice();
+    public List<Prodotto> getByRegex(String titolo);
 }

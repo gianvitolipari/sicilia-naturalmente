@@ -74,4 +74,13 @@ public class ProdottoServiceImpl implements ProdottoService{
         return prodottoRepository.findByOrderByPrezzoAsc();
     }
 
+    @Override
+    public List<Prodotto> getByRegex(String titolo) {
+        if(titolo != null){
+            List<Prodotto> productsList= prodottoRepository.findByTitoloOrderByTitoloAsc(titolo);
+            return productsList;
+        }
+        throw new CustomException("There is no products", HttpStatus.NOT_FOUND);
+    }
+
 }

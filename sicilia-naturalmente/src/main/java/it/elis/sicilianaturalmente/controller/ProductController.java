@@ -20,16 +20,19 @@ public class ProductController {
     @Autowired
     ProdottoService prodottoService;
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/")
     public ResponseEntity<List<Prodotto>> getProducts() {
         return ResponseEntity.ok(prodottoService.getAllProduct());
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/{id}")
     public ResponseEntity<Prodotto> getProduct(@PathVariable String id) {
         return ResponseEntity.ok(prodottoService.getProductByTitolo(id));
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/create")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> createProduct(@RequestBody Prodotto prodotto) {
@@ -37,6 +40,7 @@ public class ProductController {
         return ResponseEntity.ok("Product creation successful");
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @DeleteMapping("/delete/{titolo}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> deleteProduct(@PathVariable String titolo) {
@@ -44,11 +48,13 @@ public class ProductController {
         return ResponseEntity.ok("Product deleted successfully");
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/format/{formato}")
     public ResponseEntity<List<Prodotto>> getFormato(@PathVariable Formato formato) {
         return ResponseEntity.ok(prodottoService.getFormato(formato));
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/price")
     public ResponseEntity<List<Prodotto>> orderByPrice() {
         return ResponseEntity.ok(prodottoService.orderByPrice());

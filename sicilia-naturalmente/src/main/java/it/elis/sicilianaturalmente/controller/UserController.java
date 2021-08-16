@@ -23,6 +23,7 @@ public class UserController {
     @Autowired
     AccountService accountService;
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @DeleteMapping(value = "/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> delete(@RequestBody Account account) {
@@ -30,24 +31,28 @@ public class UserController {
         return ResponseEntity.ok("Cancellazione dell'Account " + account.getEmail().toString() + " effettuata correttamente");
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Account> search(@PathVariable String id) {
         return ResponseEntity.ok(accountService.search(Long.valueOf(id).longValue()));
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping(value = "/accounts")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Account>> getAccounts() {
         return ResponseEntity.ok(accountService.getAccounts());
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping(value = "/me")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<Account> whoami(HttpServletRequest req) {
         return ResponseEntity.ok(accountService.whoami(req));
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/role")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> changeRole(@RequestBody Account account) {
@@ -56,6 +61,7 @@ public class UserController {
     }
 
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/favorite")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<String> addOnFavoriteList(@RequestBody Prodotto prodotto) {
@@ -63,6 +69,7 @@ public class UserController {
         return ResponseEntity.ok("Product inserted correctly in the list of favorites");
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @DeleteMapping("/favorite/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<String> deleteProductFromFavoriteList(@RequestBody Prodotto prodotto) {
@@ -70,12 +77,14 @@ public class UserController {
         return ResponseEntity.ok("The product has been successfully removed from the favorites list");
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/address")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<Account> changeAddressInformation(@RequestBody Account account) {
         return ResponseEntity.ok(accountService.changeAddressInformation(account));
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/order")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<String> addOnFavoriteList(@RequestBody Ordine ordine) {

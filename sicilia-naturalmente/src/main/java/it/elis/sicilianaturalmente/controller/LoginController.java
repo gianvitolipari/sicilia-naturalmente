@@ -20,12 +20,14 @@ public class LoginController {
     @Autowired
     AccountService accountService;
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody Account account) {
         account.setRuolo(Ruolo.ROLE_CLIENT);
         return ResponseEntity.ok(accountService.signup(account));
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/signin")
     public ResponseEntity<String> signin(@RequestBody Account account) {
         return ResponseEntity.ok(accountService.signin(account.getEmail(), account.getPassword()));

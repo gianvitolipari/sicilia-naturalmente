@@ -80,7 +80,7 @@ public class ProdottoServiceImpl implements ProdottoService{
             List<Prodotto> productsList= prodottoRepository.findByTitoloOrderByTitoloAsc(titolo);
             return productsList;
         }
-        throw new CustomException("There is no products", HttpStatus.NOT_FOUND);
+        return getAllProduct();
     }
 
 }

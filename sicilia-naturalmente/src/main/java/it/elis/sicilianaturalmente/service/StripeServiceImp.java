@@ -1,10 +1,11 @@
 package it.elis.sicilianaturalmente.service;
 
 import com.stripe.Stripe;
-import com.stripe.model.Address;
 import com.stripe.model.Charge;
 import com.stripe.model.Customer;
+import com.stripe.model.PaymentIntent;
 import it.elis.sicilianaturalmente.model.Account;
+import it.elis.sicilianaturalmente.model.PaymentData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -41,21 +44,15 @@ public class StripeServiceImp implements StripeService{
     }
 
     @Override
-    public Customer createCustomer(Customer customer) throws Exception {
+    public Customer createCustomer() throws Exception {
         Stripe.apiKey = stripeApiKey;
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
         Account account = accountService.whoami(request);
 
-        Address address = new Address();
-        address.setCity(customer.getAddress().getCity());
-        address.setCountry(customer.getAddress().getCountry());
-        address.setLine1(customer.getAddress().getLine1());
-        address.setPostalCode(customer.getAddress().getPostalCode());
         Map<String, Object> params = new HashMap<>();
         params.put("email",account.getEmail());
         params.put("name",account.getNome());
-        params.put("address",customer.getAddress());
 
         Customer stripeCustomer = Customer.create(params);
         return stripeCustomer;
@@ -79,5 +76,23 @@ public class StripeServiceImp implements StripeService{
         chargeParams.put("source", sourceCard);
         Charge charge = Charge.create(chargeParams);
         return charge;
+    }
+
+    @Override
+    public PaymentIntent createPaymentIntent(PaymentData paymentData) throws Exception {
+        Stripe.apiKey = stripeApiKey;
+        List<Object> paymentMethodTypes = new ArrayList<>();
+        paymentMethodTypes.add("card");
+        Map<String, Object> params = new HashMap<>();
+        params.put("amount", paymentData.getPrice());
+        params.put("payment_method", paymentData.getPaymentMethod());
+        params.put("currency", "eur");
+        String customerId = createCustomer().getId();
+        params.put("customer", customerId);
+        params.put("confirm", true);
+        params.put("payment_method_types", paymentMethodTypes );
+
+        PaymentIntent paymentIntent = PaymentIntent.create(params);
+        return paymentIntent;
     }
 }

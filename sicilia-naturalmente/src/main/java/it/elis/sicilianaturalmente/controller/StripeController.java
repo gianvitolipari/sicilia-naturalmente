@@ -2,13 +2,12 @@ package it.elis.sicilianaturalmente.controller;
 
 import com.stripe.model.Charge;
 import com.stripe.model.Customer;
+import com.stripe.model.PaymentIntent;
+import it.elis.sicilianaturalmente.model.PaymentData;
 import it.elis.sicilianaturalmente.service.StripeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,9 +23,17 @@ public class StripeController {
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
-    @PostMapping("/customer/create")
-    public ResponseEntity<Customer> createCustomer(Customer customer) throws Exception {
-        return ResponseEntity.ok(stripeService.createCustomer(customer));
+    @GetMapping("/customer/create")
+    public ResponseEntity<String> createCustomer() throws Exception {
+        Customer stripeCustomer = stripeService.createCustomer();
+        return ResponseEntity.ok(stripeCustomer.getId());
+    }
+
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @PostMapping("/payment_intents")
+    public ResponseEntity<String> createCustomer(@RequestBody PaymentData paymentData) throws Exception {
+        PaymentIntent paymentIntent = stripeService.createPaymentIntent(paymentData);
+        return ResponseEntity.ok(paymentIntent.getId());
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})

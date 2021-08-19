@@ -21,7 +21,7 @@ public class SiciliaNaturalmenteApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/greeting-javaconfig").allowedOrigins("http://172.23.0.1:3000");
+				registry.addMapping("/greeting-javaconfig").allowedOrigins("http://localhost:3000");
 			}
 		};
 	}

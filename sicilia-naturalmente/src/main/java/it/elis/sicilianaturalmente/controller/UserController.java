@@ -38,9 +38,9 @@ public class UserController {
         return ResponseEntity.ok(accountService.search(Long.valueOf(id).longValue()));
     }
 
-    @CrossOrigin("*")
+    @CrossOrigin(origins = {"http://127.0.0.1:3000"})
     @GetMapping(value = "/accounts")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Account>> getAccounts() {
         return ResponseEntity.ok(accountService.getAccounts());
     }

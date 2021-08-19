@@ -36,6 +36,9 @@ public class Account {
         @Column(name = "numeroTel")
         private String numeroTel;
 
+        @Column(name = "customer_id")
+        private String customer_id;
+
         @Enumerated(EnumType.STRING)
         @Column(name = "ruolo")
         private Ruolo ruolo;

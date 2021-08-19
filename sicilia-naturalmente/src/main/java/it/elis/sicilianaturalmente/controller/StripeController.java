@@ -1,15 +1,16 @@
 package it.elis.sicilianaturalmente.controller;
 
-import com.stripe.model.Charge;
-import com.stripe.model.Customer;
-import com.stripe.model.PaymentIntent;
+import com.stripe.model.*;
 import it.elis.sicilianaturalmente.model.PaymentData;
+import it.elis.sicilianaturalmente.model.PaymentMethodData;
 import it.elis.sicilianaturalmente.service.StripeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/payment")
@@ -23,24 +24,42 @@ public class StripeController {
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
-    @GetMapping("/customer/create")
-    public ResponseEntity<String> createCustomer() throws Exception {
+    @GetMapping("/customer_id")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    public ResponseEntity<String> getCustomerId() throws Exception {
         Customer stripeCustomer = stripeService.createCustomer();
         return ResponseEntity.ok(stripeCustomer.getId());
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/payment_intents")
-    public ResponseEntity<String> createCustomer(@RequestBody PaymentData paymentData) throws Exception {
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    public ResponseEntity<String> createPaymentIntent(@RequestBody PaymentData paymentData) throws Exception {
         PaymentIntent paymentIntent = stripeService.createPaymentIntent(paymentData);
         return ResponseEntity.ok(paymentIntent.getId());
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
-    @PostMapping("/charge")
-    public Charge chargeCard(HttpServletRequest request) throws Exception {
-        String token = request.getHeader("token");
-        Double amount = Double.parseDouble(request.getHeader("amount"));
-        return this.stripeService.chargeNewCard(token, amount);
+    @PutMapping("/customer")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    public ResponseEntity<String> addPaymentMethod(@RequestBody String payment_method) throws Exception {
+        PaymentMethod newPaymentMethod = stripeService.addPaymentMethod(payment_method);
+        return ResponseEntity.ok("Il metodo di pagamento con id:"+newPaymentMethod.getId()+" e' stato aggiunto correttamente");
+    }
+
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @GetMapping("/customer")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    public ResponseEntity<String> getCustomer() throws Exception {
+        Customer stripeCustomer = stripeService.getCustomer();
+        return ResponseEntity.ok(stripeCustomer.toString());
+    }
+
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @GetMapping("/customer_payment_methods")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    public ResponseEntity<List<PaymentMethodData>> getPaymentMethodCollection() throws Exception {
+        List<PaymentMethodData> paymentMethodCollection = stripeService.getPaymentMethod();
+        return ResponseEntity.ok(paymentMethodCollection);
     }
 }

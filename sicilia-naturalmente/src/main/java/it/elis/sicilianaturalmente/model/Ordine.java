@@ -22,14 +22,19 @@ public class Ordine {
     private Long idOrdine;
 
     @Column(name = "data")
-    private Date data;
+    private String data;
 
     @Column(name = "prezzoTot")
-    private Float prezzoTot;
+    private Long prezzoTot;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statoPagamento")
+    private StatoPagamento statoPagamento;
 
     @ManyToMany( cascade = {CascadeType.ALL})
     private List<Prodotto> prodotti;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "stato")
     private Stato stato;
 

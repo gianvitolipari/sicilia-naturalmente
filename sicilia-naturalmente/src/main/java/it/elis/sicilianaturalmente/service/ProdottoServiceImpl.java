@@ -83,4 +83,27 @@ public class ProdottoServiceImpl implements ProdottoService{
         return getAllProduct();
     }
 
+    @Override
+    public boolean checkAvailability(String titolo, Long quantita) {
+        Optional<Prodotto> prodotto = prodottoRepository.findByTitolo(titolo);
+        Long quantitaDisponibile = Long.valueOf(prodotto.get().getQuantita());
+        if(quantitaDisponibile>=quantita){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void updateQuantity(String titolo, Long quantita) {
+        if(checkAvailability(titolo,quantita)){
+            throw new CustomException("The quantity of the product is not sufficient", HttpStatus.CONFLICT);
+        }
+        Optional<Prodotto> prodotto = prodottoRepository.findByTitolo(titolo);
+        Long quantitaDisponibile = Long.valueOf(prodotto.get().getQuantita());
+        String newQuantita = String.valueOf(quantitaDisponibile-quantita);
+        prodotto.get().setQuantita(newQuantita);
+        prodottoRepository.deleteByTitolo(titolo);
+        prodottoRepository.save(prodotto.get());
+    }
+
 }

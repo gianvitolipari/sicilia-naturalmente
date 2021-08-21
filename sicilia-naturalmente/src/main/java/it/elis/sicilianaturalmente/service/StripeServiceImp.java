@@ -2,21 +2,20 @@ package it.elis.sicilianaturalmente.service;
 
 import com.stripe.Stripe;
 import com.stripe.model.*;
+import it.elis.sicilianaturalmente.exception.CustomException;
+import it.elis.sicilianaturalmente.model.*;
 import it.elis.sicilianaturalmente.model.Account;
-import it.elis.sicilianaturalmente.model.PaymentData;
-import it.elis.sicilianaturalmente.model.PaymentMethodData;
 import it.elis.sicilianaturalmente.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Component
 public class StripeServiceImp implements StripeService{
@@ -29,6 +28,12 @@ public class StripeServiceImp implements StripeService{
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private ProdottoService prodottoService;
+
+    @Autowired
+    private OrdineService ordineService;
 
    /* @Autowired
     StripeServiceImp() {
@@ -63,7 +68,7 @@ public class StripeServiceImp implements StripeService{
 
 
     @Override
-    public PaymentIntent createPaymentIntent(PaymentData paymentData) throws Exception {
+    public void createPaymentIntent(PaymentData paymentData) throws Exception {
         Stripe.apiKey = stripeApiKey;
         List<Object> paymentMethodTypes = new ArrayList<>();
         paymentMethodTypes.add("card");
@@ -76,8 +81,32 @@ public class StripeServiceImp implements StripeService{
         params.put("confirm", true);
         params.put("payment_method_types", paymentMethodTypes );
 
-        PaymentIntent paymentIntent = PaymentIntent.create(params);
-        return paymentIntent;
+        boolean quantitaOK = true;
+        for (Prodotto p: paymentData.getProducts()) {
+            if(!prodottoService.checkAvailability(p.getTitolo(),Long.valueOf(p.getQuantita()))){
+                quantitaOK=false;
+            }
+        }
+        if(!quantitaOK){
+            throw new CustomException("One of the products inserted is no longer available", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        Date dt = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentTime = sdf.format(dt);
+
+        Ordine ordine =new Ordine().setData(currentTime).setPrezzoTot(paymentData.getPrice()).setStatoPagamento(StatoPagamento.NON_PAGATO);
+
+        if(paymentData.getPaymentMethod()!=null){
+            PaymentIntent paymentIntent = PaymentIntent.create(params);
+            ordine.setStatoPagamento(StatoPagamento.PAGATO);
+        }
+
+        accountService.addOnOrderList(ordine);
+        for (Prodotto p:paymentData.getProducts()) {
+            prodottoService.updateQuantity(p.getTitolo(),Long.valueOf(p.getQuantita()));
+        }
+
     }
 
     @Override

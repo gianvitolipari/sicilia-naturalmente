@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface StripeService {
     public Customer createCustomer() throws Exception;
-    public PaymentIntent createPaymentIntent(PaymentData paymentData) throws Exception;
+    public void createPaymentIntent(PaymentData paymentData) throws Exception;
     public PaymentMethod addPaymentMethod(String payment_method) throws Exception;
     public Customer getCustomer() throws Exception;
     public List<PaymentMethodData> getPaymentMethod() throws Exception;

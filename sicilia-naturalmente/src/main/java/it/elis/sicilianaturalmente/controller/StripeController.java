@@ -35,8 +35,8 @@ public class StripeController {
     @PostMapping("/payment_intents")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<String> createPaymentIntent(@RequestBody PaymentData paymentData) throws Exception {
-        PaymentIntent paymentIntent = stripeService.createPaymentIntent(paymentData);
-        return ResponseEntity.ok(paymentIntent.getId());
+        stripeService.createPaymentIntent(paymentData);
+        return ResponseEntity.ok("Payment successful");
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})

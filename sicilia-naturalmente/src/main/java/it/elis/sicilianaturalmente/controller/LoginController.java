@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -31,6 +32,13 @@ public class LoginController {
     @PostMapping("/signin")
     public ResponseEntity<String> signin(@RequestBody Account account) {
         return ResponseEntity.ok(accountService.signin(account.getEmail(), account.getPassword()));
+    }
+
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @PostMapping("/forgotten")
+    public ResponseEntity<String> passwordRecovery(@RequestBody Account account) throws MessagingException {
+        accountService.passwordRecovery(account);
+        return ResponseEntity.ok("A password recovery e-mail has been sent");
     }
 
 }

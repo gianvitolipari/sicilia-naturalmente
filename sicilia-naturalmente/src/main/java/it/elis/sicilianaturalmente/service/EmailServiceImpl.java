@@ -43,8 +43,7 @@ public class EmailServiceImpl implements EmailService{
     }
 
     public void sendMail(String toEmail, String subject, String message) throws MessagingException {
-       String a = "cane";
-        sendMailMultipart(toEmail, subject, message, null);
+       sendMailMultipart(toEmail, subject, message, null);
     }
 
     public void sendMail(String toEmail, String subject, String message, File file) throws MessagingException {

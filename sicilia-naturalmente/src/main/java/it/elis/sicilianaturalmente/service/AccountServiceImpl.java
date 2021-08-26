@@ -18,11 +18,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.mail.MessagingException;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -41,6 +45,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public Account getAccount(String nome) {
@@ -195,5 +202,34 @@ public class AccountServiceImpl implements AccountService {
         account.getOrdini().add(ordine);
         accountRepository.deleteByEmail(account.getEmail());
         accountRepository.save(account);
+    }
+
+    @Override
+    public void passwordRecovery(Account account) throws MessagingException {
+        if(accountRepository.existsAccountByEmail(account.getEmail())){
+            String generatedPassword = randomString(8);
+            String newPassword = passwordEncoder.encode(generatedPassword);
+            String subject = "Gentile utente,\n" +
+                    "\n" +
+                    "Di seguito la sua nuova password:\n" +
+                    "\n" + generatedPassword;
+                    emailService.sendMail(account.getEmail(),"Recupero password",subject);
+            Account newAccount = accountRepository.findByEmail(account.getEmail()).get();
+            newAccount.setPassword(newPassword);
+            accountRepository.deleteByEmail(account.getEmail());
+            accountRepository.save(newAccount);
+        }else{
+            throw new CustomException("User not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static SecureRandom rnd = new SecureRandom();
+
+    String randomString(int len){
+        StringBuilder sb = new StringBuilder(len);
+        for(int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
     }
 }

@@ -5,6 +5,7 @@ import it.elis.sicilianaturalmente.model.Ordine;
 import it.elis.sicilianaturalmente.model.Prodotto;
 import org.springframework.http.HttpStatus;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public interface AccountService {
     public void deleteProductFromFavoriteList(Prodotto prodotto);
     public Account changeAddressInformation(Account account);
     public void addOnOrderList(Ordine ordine);
+    public void passwordRecovery(Account account) throws MessagingException;
 
 
 }

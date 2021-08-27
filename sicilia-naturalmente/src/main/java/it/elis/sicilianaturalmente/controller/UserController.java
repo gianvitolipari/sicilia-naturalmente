@@ -91,5 +91,13 @@ public class UserController {
         accountService.addOnOrderList(ordine);
         return ResponseEntity.ok("Order inserted correctly in the list of favorites");
     }
+
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @PostMapping("/changePassword")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    public ResponseEntity<String> changePassword(@RequestBody Account account) {
+        accountService.changePassword(null,account.getPassword());
+        return ResponseEntity.ok("The password was changed correctly");
+    }
 }
 

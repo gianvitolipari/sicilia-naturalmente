@@ -29,7 +29,7 @@ class SiciliaNaturalmenteApplicationTests {
     @Test
     void insertTest() {
 
-        accountRepository.save(new Account().setNome("Gianvito").setCognome("Grassi").setEmail("gianvito99.gg@gmail.com").setPassword(passwordEncoder.encode("1234")).setRuolo(Ruolo.ROLE_ADMIN));
+        accountRepository.save(new Account().setNome("Gianvito").setCognome("Grassi").setEmail("gianvito99.gg@gmail.com").setPassword(passwordEncoder.encode("123456")).setRuolo(Ruolo.ROLE_ADMIN));
     }
 
     @Rollback(value = false)

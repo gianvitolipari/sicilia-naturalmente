@@ -25,6 +25,7 @@ public interface AccountService {
     public Account changeAddressInformation(Account account);
     public void addOnOrderList(Ordine ordine);
     public void passwordRecovery(Account account) throws MessagingException;
+    public void changePassword(Account account, String password);
 
 
 }

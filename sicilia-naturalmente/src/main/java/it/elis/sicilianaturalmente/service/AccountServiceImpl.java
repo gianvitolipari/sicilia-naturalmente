@@ -62,10 +62,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public String signup(Account account) {
         if (!accountRepository.existsAccountByEmail(account.getEmail())) {
-            account.setPassword(passwordEncoder.encode(account.getPassword()));
-            accountRepository.save(account);
-            return jwtTokenProvider.createToken(account.getEmail(), Collections.singletonList(account.getRuolo()));
-        } else {
+            if(account.getPassword().length()>5){
+                account.setPassword(passwordEncoder.encode(account.getPassword()));
+                accountRepository.save(account);
+                return jwtTokenProvider.createToken(account.getEmail(), Collections.singletonList(account.getRuolo()));
+            }else{
+                throw new CustomException("The password must contain at least 6 characters", HttpStatus.BAD_REQUEST);
+            }
+          } else {
             throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
@@ -183,9 +187,7 @@ public class AccountServiceImpl implements AccountService {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
         Account newAccount = whoami(request);
-        newAccount.setCap(account.getCap())
-                .setCivico(account.getCivico())
-                .setIndirizzo(account.getIndirizzo());
+        newAccount.setIndirizzo(account.getIndirizzo());
         accountRepository.deleteByEmail(newAccount.getEmail());
         accountRepository.save(newAccount);
         return newAccount;
@@ -214,14 +216,32 @@ public class AccountServiceImpl implements AccountService {
                     "Di seguito la sua nuova password:\n" +
                     "\n" + generatedPassword;
                     emailService.sendMail(account.getEmail(),"Recupero password",subject);
-            Account newAccount = accountRepository.findByEmail(account.getEmail()).get();
-            newAccount.setPassword(newPassword);
-            accountRepository.deleteByEmail(account.getEmail());
-            accountRepository.save(newAccount);
+            changePassword(account,newPassword);
         }else{
             throw new CustomException("User not found", HttpStatus.NOT_FOUND);
         }
     }
+
+    @Override
+    public void changePassword(Account account, String password) {
+        if(password.length()>5){
+            Account newAccount = new Account();
+            if(account == null){
+                password = passwordEncoder.encode(password);
+                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                        .getRequest();
+                newAccount = whoami(request);
+            }else{
+                newAccount = accountRepository.findByEmail(account.getEmail()).get();
+            }
+            newAccount.setPassword(password);
+            accountRepository.deleteByEmail(newAccount.getEmail());
+            accountRepository.save(newAccount);
+        }else{
+            throw new CustomException("The password must contain at least 6 characters", HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static SecureRandom rnd = new SecureRandom();

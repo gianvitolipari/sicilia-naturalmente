@@ -49,12 +49,6 @@ public class Account {
         @Column(name = "indirizzo")
         private String indirizzo;
 
-        @Column(name = "civico")
-        private Integer civico;
-
-        @Column(name = "CAP")
-        private String cap;
-
         @OneToMany( cascade = {CascadeType.ALL})
         private List<Ordine> ordini;
 }

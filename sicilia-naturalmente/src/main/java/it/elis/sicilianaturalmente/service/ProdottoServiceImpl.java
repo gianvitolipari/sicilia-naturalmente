@@ -95,7 +95,7 @@ public class ProdottoServiceImpl implements ProdottoService{
 
     @Override
     public void updateQuantity(String titolo, Long quantita) {
-        if(checkAvailability(titolo,quantita)){
+        if(!checkAvailability(titolo,quantita)){
             throw new CustomException("The quantity of the product is not sufficient", HttpStatus.CONFLICT);
         }
         Optional<Prodotto> prodotto = prodottoRepository.findByTitolo(titolo);

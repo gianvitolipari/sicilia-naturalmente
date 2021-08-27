@@ -35,6 +35,9 @@ public class StripeServiceImp implements StripeService{
     @Autowired
     private OrdineService ordineService;
 
+    @Autowired
+    private EmailService emailService;
+
    /* @Autowired
     StripeServiceImp() {
         Stripe.apiKey = "sk_test_uTAM1qndRDbiJRowe8dJf6x9";
@@ -69,6 +72,11 @@ public class StripeServiceImp implements StripeService{
 
     @Override
     public void createPaymentIntent(PaymentData paymentData) throws Exception {
+
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
+        Account account = accountService.whoami(request);
+
         Stripe.apiKey = stripeApiKey;
         List<Object> paymentMethodTypes = new ArrayList<>();
         paymentMethodTypes.add("card");
@@ -99,13 +107,20 @@ public class StripeServiceImp implements StripeService{
 
         if(paymentData.getPaymentMethod()!=null){
             PaymentIntent paymentIntent = PaymentIntent.create(params);
-            ordine.setStatoPagamento(StatoPagamento.PAGATO);
+            ordine.setStatoPagamento(StatoPagamento.PAGATO)
+                    .setStato(Stato.IN_PREPARAZIONE)
+                    .setProdotti(paymentData.getProducts());
+
         }
 
         accountService.addOnOrderList(ordine);
         for (Prodotto p:paymentData.getProducts()) {
             prodottoService.updateQuantity(p.getTitolo(),Long.valueOf(p.getQuantita()));
         }
+        String subject = ordine.toString();
+
+        emailService.sendMail(account.getEmail(),"Riepilogo ordine effettuato",subject);
+
 
     }
 

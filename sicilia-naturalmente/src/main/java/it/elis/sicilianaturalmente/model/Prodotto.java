@@ -50,7 +50,4 @@ public class Prodotto {
     @Column(name = "formato")
     private Formato formato;
 
-    @ManyToMany( cascade = {CascadeType.ALL})
-    private List<Prodotto> contenuto;
-
 }

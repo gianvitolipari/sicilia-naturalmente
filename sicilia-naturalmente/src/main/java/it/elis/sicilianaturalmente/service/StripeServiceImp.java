@@ -99,17 +99,10 @@ public class StripeServiceImp implements StripeService{
             throw new CustomException("One of the products inserted is no longer available", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        Date dt = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String currentTime = sdf.format(dt);
-
-        Ordine ordine =new Ordine().setData(currentTime).setPrezzoTot(paymentData.getPrice()).setStatoPagamento(StatoPagamento.NON_PAGATO);
-
+        Ordine ordine = ordineService.createOrder(paymentData);
         if(paymentData.getPaymentMethod()!=null){
             PaymentIntent paymentIntent = PaymentIntent.create(params);
-            ordine.setStatoPagamento(StatoPagamento.PAGATO)
-                    .setStato(Stato.IN_PREPARAZIONE)
-                    .setProdotti(paymentData.getProducts());
+            ordine.setStatoPagamento(StatoPagamento.PAGATO);
 
         }
 
@@ -123,6 +116,7 @@ public class StripeServiceImp implements StripeService{
 
 
     }
+
 
     @Override
     public PaymentMethod addPaymentMethod(String newPaymentMethod) throws Exception {

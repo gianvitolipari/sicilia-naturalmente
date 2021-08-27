@@ -21,7 +21,7 @@ public class Account {
         @Column(name = "idAccount")
         private Long idAccount;
 
-        @Column(name = "email")
+        @Column(name = "email",unique=true)
         private String email;
 
         @Column(name = "nome")
@@ -32,9 +32,6 @@ public class Account {
 
         @Column(name = "password")
         private String password;
-
-        @Column(name = "numeroTel")
-        private String numeroTel;
 
         @Column(name = "customer_id")
         private String customer_id;

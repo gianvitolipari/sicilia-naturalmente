@@ -40,7 +40,7 @@ public class StripeController {
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
-    @PutMapping("/customer")
+    @PostMapping("/customer")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<String> addPaymentMethod(@RequestBody String payment_method) throws Exception {
         PaymentMethod newPaymentMethod = stripeService.addPaymentMethod(payment_method);

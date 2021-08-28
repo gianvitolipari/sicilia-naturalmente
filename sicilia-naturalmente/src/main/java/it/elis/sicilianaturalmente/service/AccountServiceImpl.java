@@ -63,18 +63,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String signup(Account account) {
+        if(account.getNome() || account.)
         if (!accountRepository.existsAccountByEmail(account.getEmail())) {
-            if(validate(account.getEmail())){
-                if(account.getPassword().length()>5){
-                    account.setPassword(passwordEncoder.encode(account.getPassword()));
-                    accountRepository.save(account);
-                    return jwtTokenProvider.createToken(account.getEmail(), Collections.singletonList(account.getRuolo()));
-                }else{
-                    throw new CustomException("The password must contain at least 6 characters", HttpStatus.BAD_REQUEST);
-                }
-            }else{
-                throw new CustomException("The email you entered is not valid", HttpStatus.BAD_REQUEST);
-            }
+                        account.setPassword(passwordEncoder.encode(account.getPassword()));
+                        accountRepository.save(account);
+                        return jwtTokenProvider.createToken(account.getEmail(), Collections.singletonList(account.getRuolo()));
           } else {
             throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -258,11 +251,5 @@ public class AccountServiceImpl implements AccountService {
         return sb.toString();
     }
 
-    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
-            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
-    public static boolean validate(String emailStr) {
-        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
-        return matcher.find();
-    }
 }

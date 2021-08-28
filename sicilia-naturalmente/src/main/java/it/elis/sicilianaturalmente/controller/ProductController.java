@@ -66,4 +66,12 @@ public class ProductController {
         return ResponseEntity.ok(prodottoService.getByRegex(titolo));
     }
 
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @PostMapping("/editProduct")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> changeProduct(@RequestBody Prodotto prodotto) {
+        prodottoService.changeProduct(prodotto);
+        return ResponseEntity.ok("Correctly modified product");
+    }
+
 }

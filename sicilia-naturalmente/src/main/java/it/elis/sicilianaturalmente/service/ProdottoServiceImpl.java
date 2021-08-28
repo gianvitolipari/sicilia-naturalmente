@@ -139,4 +139,16 @@ public class ProdottoServiceImpl implements ProdottoService{
         prodottoRepository.save(prodotto.get());
     }
 
+    @Override
+    public void changeProduct(Prodotto prodotto) {
+        Optional<Prodotto> prodottoOptional = prodottoRepository.findByTitolo(prodotto.getTitolo());
+        if(prodottoOptional==null){
+            throw new CustomException("There is no product with this idProduct", HttpStatus.NOT_FOUND);
+        }
+        Prodotto prodotto1= prodottoOptional.get();
+        prodotto1.setQuantita(prodotto.getQuantita())
+                .setPrezzo(prodotto.getPrezzo());
+        prodottoRepository.save(prodotto1);
+    }
+
 }

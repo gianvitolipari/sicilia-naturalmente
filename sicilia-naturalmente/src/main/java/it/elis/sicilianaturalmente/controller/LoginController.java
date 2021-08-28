@@ -2,6 +2,7 @@ package it.elis.sicilianaturalmente.controller;
 
 import io.swagger.annotations.*;
 import it.elis.sicilianaturalmente.model.Account;
+import it.elis.sicilianaturalmente.model.RegexData;
 import it.elis.sicilianaturalmente.model.Ruolo;
 import it.elis.sicilianaturalmente.service.AccountService;
 import org.modelmapper.ModelMapper;
@@ -21,11 +22,17 @@ public class LoginController {
     @Autowired
     AccountService accountService;
 
-    @CrossOrigin(origins = {"http://localhost:3000"})
+    //@CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody Account account) {
-        account.setRuolo(Ruolo.ROLE_CLIENT);
-        return ResponseEntity.ok(accountService.signup(account));
+        RegexData regexData = account.validateAccount();
+        if(regexData.isValid()){
+            account.setRuolo(Ruolo.ROLE_CLIENT);
+            return ResponseEntity.ok(accountService.signup(account));
+        }else{
+            return ResponseEntity.badRequest().body(regexData.getError());
+        }
+
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})

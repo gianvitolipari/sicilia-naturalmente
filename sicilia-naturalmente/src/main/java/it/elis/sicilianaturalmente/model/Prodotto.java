@@ -22,7 +22,7 @@ public class Prodotto {
     @Column(name = "idProdotto")
     private Long idProdotto;
 
-    @Column(name = "titolo")
+    @Column(name = "titolo",unique=true,nullable = false)
     private String titolo;
 
     @Column(name = "descrizione")
@@ -34,10 +34,10 @@ public class Prodotto {
     @Column(name = "immagineRetro",columnDefinition="LONGTEXT")
     private String immagineRetro;
 
-    @Column(name = "prezzo")
+    @Column(name = "prezzo",nullable = false)
     private Float prezzo;
 
-    @Column(name = "quantità")
+    @Column(name = "quantità",nullable = false)
     private String quantita;
 
     @Column(name = "grano")

@@ -21,16 +21,16 @@ public class Account {
         @Column(name = "idAccount")
         private Long idAccount;
 
-        @Column(name = "email", unique=true)
+        @Column(name = "email", unique=true,nullable = false)
         private String email;
 
-        @Column(name = "nome")
+        @Column(name = "nome",nullable = false)
         private String nome;
 
         @Column(name = "cognome")
         private String cognome;
 
-        @Column(name = "password")
+        @Column(name = "password",nullable = false)
         private String password;
 
         @Column(name = "customer_id")

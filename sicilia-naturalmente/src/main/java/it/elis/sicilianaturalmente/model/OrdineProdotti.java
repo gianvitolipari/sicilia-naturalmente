@@ -22,4 +22,7 @@ public class OrdineProdotti {
     private Prodotto prodotto;
 
     private Long quantita;
+
+    @ManyToOne( cascade = {CascadeType.ALL})
+    private Ordine ordine;
 }

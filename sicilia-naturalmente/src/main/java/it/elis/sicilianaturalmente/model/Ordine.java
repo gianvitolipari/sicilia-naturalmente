@@ -31,9 +31,11 @@ public class Ordine {
     @Column(name = "statoPagamento")
     private StatoPagamento statoPagamento;
 
-    @OneToMany
-    @Column(name = "ordineProdotti")
+   /* @OneToMany
+    @Column(name = "ordineProdotti ")
     private List<OrdineProdotti> ordineProdotti;
+
+    */
 
     @Enumerated(EnumType.STRING)
     @Column(name = "stato")

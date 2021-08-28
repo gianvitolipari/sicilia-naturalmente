@@ -65,4 +65,5 @@ public class ProductController {
     public ResponseEntity<List<Prodotto>> getProductByRegex(@PathVariable String titolo) {
         return ResponseEntity.ok(prodottoService.getByRegex(titolo));
     }
+
 }

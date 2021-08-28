@@ -1,9 +1,7 @@
 package it.elis.sicilianaturalmente.controller;
 
 
-import it.elis.sicilianaturalmente.model.Account;
-import it.elis.sicilianaturalmente.model.Ordine;
-import it.elis.sicilianaturalmente.model.Prodotto;
+import it.elis.sicilianaturalmente.model.*;
 import it.elis.sicilianaturalmente.service.AccountService;
 import it.elis.sicilianaturalmente.service.OrdineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +96,12 @@ public class UserController {
     public ResponseEntity<String> changePassword(@RequestBody Account account) {
         accountService.changePassword(null,account.getPassword());
         return ResponseEntity.ok("The password was changed correctly");
+    }
+
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @GetMapping("/order/{idOrdine}")
+    public ResponseEntity<List<ContenutoProdotto>> getContenutoOrdine(@PathVariable Long idOrdine) {
+        return ResponseEntity.ok(ordineService.getContenutoOrdine(idOrdine));
     }
 }
 

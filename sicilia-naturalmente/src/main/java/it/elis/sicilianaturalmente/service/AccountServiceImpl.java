@@ -97,7 +97,7 @@ public class AccountServiceImpl implements AccountService {
         } else {
             account.setRuolo(Ruolo.ROLE_ADMIN);
         }
-        accountRepository.deleteByEmail(email);
+        //accountRepository.deleteByEmail(email);
         accountRepository.save(account);
     }
 
@@ -163,7 +163,7 @@ public class AccountServiceImpl implements AccountService {
             throw new CustomException("The product already exists", HttpStatus.UNPROCESSABLE_ENTITY);
         }else{
             account.getFavoriti().add(newProdotto.get());
-            accountRepository.deleteByEmail(account.getEmail());
+            //accountRepository.deleteByEmail(account.getEmail());
             accountRepository.save(account);
         }
 
@@ -182,7 +182,7 @@ public class AccountServiceImpl implements AccountService {
             throw new CustomException("The product is not present in the favorites list", HttpStatus.UNPROCESSABLE_ENTITY);
         }else{
             account.getFavoriti().remove(newProdotto.get());
-            accountRepository.deleteByEmail(account.getEmail());
+            //accountRepository.deleteByEmail(account.getEmail());
             accountRepository.save(account);
         }
 
@@ -194,7 +194,7 @@ public class AccountServiceImpl implements AccountService {
                 .getRequest();
         Account newAccount = whoami(request);
         newAccount.setIndirizzo(account.getIndirizzo());
-        accountRepository.deleteByEmail(newAccount.getEmail());
+        //accountRepository.deleteByEmail(newAccount.getEmail());
         accountRepository.save(newAccount);
         return newAccount;
     }
@@ -208,7 +208,6 @@ public class AccountServiceImpl implements AccountService {
                 .getRequest();
         Account account = whoami(request);
         account.getOrdini().add(ordine);
-        accountRepository.deleteByEmail(account.getEmail());
         accountRepository.save(account);
     }
 
@@ -241,7 +240,7 @@ public class AccountServiceImpl implements AccountService {
                 newAccount = accountRepository.findByEmail(account.getEmail()).get();
             }
             newAccount.setPassword(password);
-            accountRepository.deleteByEmail(newAccount.getEmail());
+            //accountRepository.deleteByEmail(newAccount.getEmail());
             accountRepository.save(newAccount);
         }else{
             throw new CustomException("The password must contain at least 6 characters", HttpStatus.BAD_REQUEST);

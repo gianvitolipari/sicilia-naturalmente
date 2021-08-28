@@ -153,7 +153,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void addOnFavoriteList(Prodotto prodotto) {
         Optional<Prodotto> newProdotto = prodottoRepository.findByTitolo(prodotto.getTitolo());
-        if(newProdotto.isEmpty()){
+        if(newProdotto.isEmpty() || prodotto.getDeleted()){
             throw new CustomException("Product not found", HttpStatus.NOT_FOUND);
         }
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
@@ -172,7 +172,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void deleteProductFromFavoriteList(Prodotto prodotto) {
         Optional<Prodotto> newProdotto = prodottoRepository.findByTitolo(prodotto.getTitolo());
-        if(newProdotto.isEmpty()){
+        if(newProdotto.isEmpty() || newProdotto.get().getDeleted()){
             throw new CustomException("Product not found", HttpStatus.NOT_FOUND);
         }
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())

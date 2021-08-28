@@ -50,4 +50,7 @@ public class Prodotto {
     @Column(name = "formato")
     private Formato formato;
 
+    @Column(name = "deleted")
+    private Boolean deleted;
+
 }

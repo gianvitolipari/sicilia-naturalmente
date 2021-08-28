@@ -13,6 +13,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ public class ProdottoServiceImpl implements ProdottoService{
     @Override
     public Prodotto getProductByTitolo(String titolo) {
         Optional<Prodotto> prodotto = prodottoRepository.findByTitolo(titolo);
-        if(prodotto.isEmpty()){
+        if(prodotto.isEmpty() || prodotto.get().getDeleted()){
             throw new CustomException("Product not found", HttpStatus.NOT_FOUND);
         }
         return prodottoRepository.findByTitolo(titolo).orElseThrow(() -> new RuntimeException());
@@ -39,13 +40,19 @@ public class ProdottoServiceImpl implements ProdottoService{
         if(prodotti.isEmpty()){
             throw new CustomException("Products not found", HttpStatus.NOT_FOUND);
         }
-        return prodottoRepository.findAll();
+        List<Prodotto> prodottiDisponibili = new ArrayList<>();
+        for (Prodotto p: prodotti) {
+            if(!p.getDeleted()){
+                prodottiDisponibili.add(p);
+            }
+        }
+        return prodottiDisponibili;
     }
 
     @Override
     public void createProduct(Prodotto prodotto) {
         Optional<Prodotto> newProdotto = prodottoRepository.findByTitolo(prodotto.getTitolo());
-        if(!newProdotto.isEmpty()){
+        if(!newProdotto.isEmpty() && newProdotto.get().getDeleted()==false){
             throw new CustomException("The product already exists", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         prodottoRepository.save(prodotto);
@@ -54,16 +61,26 @@ public class ProdottoServiceImpl implements ProdottoService{
     @Override
     public void deleteProduct(String titolo) {
         Optional<Prodotto> prodotto = prodottoRepository.findByTitolo(titolo);
-        if(prodotto.isEmpty()){
+        if(prodotto.isEmpty() || prodotto.get().getDeleted()){
             throw new CustomException("There is no product with this idProduct", HttpStatus.NOT_FOUND);
         }
-        prodottoRepository.deleteByTitolo(titolo);
+        prodotto.get().setDeleted(true);
+        prodottoRepository.save(prodotto.get());
     }
 
     @Override
     public List<Prodotto> getFormato(Formato formato) {
-
-        return prodottoRepository.findAllByFormato(formato);
+        if(prodottoRepository.findAllByFormato(formato).isEmpty()){
+            throw new CustomException("There is no products", HttpStatus.NOT_FOUND);
+        }
+        List<Prodotto> prodotti = prodottoRepository.findAllByFormato(formato);
+        List<Prodotto> prodottiDisponibili = new ArrayList<>();
+        for (Prodotto p: prodotti) {
+            if(!p.getDeleted()){
+                prodottiDisponibili.add(p);
+            }
+        }
+        return prodottiDisponibili;
     }
 
     @Override
@@ -71,15 +88,29 @@ public class ProdottoServiceImpl implements ProdottoService{
         if(prodottoRepository.findAll().isEmpty()){
             throw new CustomException("There is no products", HttpStatus.NOT_FOUND);
         }
-        return prodottoRepository.findByOrderByPrezzoAsc();
+        List<Prodotto> prodotti = prodottoRepository.findByOrderByPrezzoAsc();
+        List<Prodotto> prodottiDisponibili = new ArrayList<>();
+        for (Prodotto p: prodotti) {
+            if(!p.getDeleted()){
+                prodottiDisponibili.add(p);
+            }
+        }
+        return prodottiDisponibili;
     }
 
     @Override
     public List<Prodotto> getByRegex(String titolo) {
         if(titolo != null){
-            List<Prodotto> productsList= prodottoRepository.findByTitoloOrderByTitoloAsc(titolo);
-            return productsList;
+            List<Prodotto> prodotti = prodottoRepository.findByTitoloOrderByTitoloAsc(titolo);
+            List<Prodotto> prodottiDisponibili = new ArrayList<>();
+            for (Prodotto p: prodotti) {
+                if(!p.getDeleted()){
+                    prodottiDisponibili.add(p);
+                }
+            }
+            return prodottiDisponibili;
         }
+
         return getAllProduct();
     }
 
@@ -87,7 +118,7 @@ public class ProdottoServiceImpl implements ProdottoService{
     public boolean checkAvailability(String titolo, Long quantita) {
         Optional<Prodotto> prodotto = prodottoRepository.findByTitolo(titolo);
         Long quantitaDisponibile = Long.valueOf(prodotto.get().getQuantita());
-        if(quantitaDisponibile>=quantita){
+        if(quantitaDisponibile>=quantita && prodotto.get().getDeleted()==false){
             return true;
         }
         return false;

@@ -55,6 +55,9 @@ public class OrdineServiceImpl implements OrdineService{
         for (int i=0; i<paymentData.getProducts().size();i++) {
             prodotto = prodottoRepository.findByTitolo(paymentData.getProducts().get(i).getTitolo()).get();
             quantita = Long.valueOf(paymentData.getProducts().get(i).getQuantita());
+            if(prodotto.getDeleted()){
+                throw new CustomException("The product "+prodotto.getTitolo()+" is not available", HttpStatus.NOT_FOUND);
+            }
             OrdineProdotti ordineProdotti = new OrdineProdotti().setProdotto(prodotto).setQuantita(quantita);
             prodotti.add(ordineProdotti);
             ordineProdotti.setOrdine(ordine);

@@ -2,6 +2,7 @@ package it.elis.sicilianaturalmente.service;
 
 import it.elis.sicilianaturalmente.exception.CustomException;
 import it.elis.sicilianaturalmente.model.*;
+import it.elis.sicilianaturalmente.repository.AccountRepository;
 import it.elis.sicilianaturalmente.repository.OrdineProdottoRepository;
 import it.elis.sicilianaturalmente.repository.OrdineRepository;
 import it.elis.sicilianaturalmente.repository.ProdottoRepository;
@@ -31,6 +32,9 @@ public class OrdineServiceImpl implements OrdineService{
 
     @Autowired
     AccountService accountService;
+
+    @Autowired
+    AccountRepository accountRepository;
 
 
     @Override
@@ -81,6 +85,33 @@ public class OrdineServiceImpl implements OrdineService{
         throw new CustomException("The user does not have an order with this id", HttpStatus.NOT_FOUND);
     }
 
+    @Override
+    public List<Ordine> getOrders(Account account) {
+        Optional<Account> accountOptional = accountRepository.findByEmail(account.getEmail());
+        if(accountOptional==null){
+            throw new CustomException("There is no user with this e-mail", HttpStatus.NOT_FOUND);
+        }
+        return accountOptional.get().getOrdini();
+    }
+
+    @Override
+    public void changeStatus(Ordine ordine) {
+        Optional<Ordine> ordineOptional = ordineRepository.findById(ordine.getIdOrdine());
+        if(ordineOptional== null){
+            throw new CustomException("There is no order with this id", HttpStatus.NOT_FOUND);
+        }
+        if(ordine.getStato()==Stato.SPEDITO){
+            ordineOptional.get().setStato(Stato.SPEDITO);
+        }else if (ordine.getStato()==Stato.CONSEGNATO){
+            ordineOptional.get().setStato(Stato.CONSEGNATO);
+        }else if (ordine.getStato()==Stato.IN_PREPARAZIONE){
+            ordineOptional.get().setStato(Stato.IN_PREPARAZIONE);
+        }else{
+            throw new CustomException("Operation not allowed", HttpStatus.BAD_REQUEST);
+        }
+        ordineRepository.save(ordineOptional.get());
+    }
+
     public boolean isOrderUser(Long idOrdine){
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
@@ -88,6 +119,9 @@ public class OrdineServiceImpl implements OrdineService{
         List<Ordine> ordini = account.getOrdini();
         for (Ordine o:ordini) {
             if(o.getIdOrdine()==idOrdine){
+                return true;
+            }
+            if(account.getRuolo()==Ruolo.ROLE_ADMIN){
                 return true;
             }
         }

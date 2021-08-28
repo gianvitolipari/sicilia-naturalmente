@@ -99,9 +99,24 @@ public class UserController {
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
-    @GetMapping("/order/{idOrdine}")
+    @GetMapping("/order/content/{idOrdine}")
     public ResponseEntity<List<ContenutoProdotto>> getContenutoOrdine(@PathVariable Long idOrdine) {
         return ResponseEntity.ok(ordineService.getContenutoOrdine(idOrdine));
+    }
+
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @PostMapping("/order/account")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<Ordine>> getOrders(@RequestBody Account account) {
+        return ResponseEntity.ok(ordineService.getOrders(account));
+    }
+
+    @CrossOrigin(origins = {"http://localhost:3000"})
+    @PostMapping("/order/status")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> getOrders(@RequestBody Ordine ordine) {
+        ordineService.changeStatus(ordine);
+        return ResponseEntity.ok("The order status was successfully changed");
     }
 }
 

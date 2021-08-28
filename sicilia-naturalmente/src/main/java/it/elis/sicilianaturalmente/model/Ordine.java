@@ -42,6 +42,8 @@ public class Ordine {
     private Stato stato;
 
 
+
+
     /*@ManyToOne( cascade = {CascadeType.ALL})
     @JoinColumn(name = "idUtente", referencedColumnName = "idAccount")
     private Account idAccount;

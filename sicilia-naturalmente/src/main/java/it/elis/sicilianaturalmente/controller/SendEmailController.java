@@ -34,7 +34,7 @@ public class SendEmailController {
     @Value("${email.from.address}")
     private String toEmail;
 
-    @RequestMapping(value = "/testSendEmail" , method = RequestMethod.POST)
+    @RequestMapping(value = "/sendEmail" , method = RequestMethod.POST)
     public ResponseEntity<String> sendEmail(@RequestBody Email email) {
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())

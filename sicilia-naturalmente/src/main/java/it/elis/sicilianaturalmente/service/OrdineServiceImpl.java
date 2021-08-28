@@ -8,7 +8,10 @@ import it.elis.sicilianaturalmente.repository.ProdottoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +28,9 @@ public class OrdineServiceImpl implements OrdineService{
 
     @Autowired
     OrdineProdottoRepository ordineProdottoRepository;
+
+    @Autowired
+    AccountService accountService;
 
 
     @Override
@@ -61,14 +67,30 @@ public class OrdineServiceImpl implements OrdineService{
         if(ordine == null){
             throw new CustomException("There is no order with this id", HttpStatus.NOT_FOUND);
         }
-        List<OrdineProdotti> ordineList = ordineProdottoRepository.findByOrdine(ordine.get());
-        List<ContenutoProdotto> contenutoProdotto = new ArrayList<>();
-        for(int i =0; i<ordineList.size();i++){
-            ContenutoProdotto prodotto=new ContenutoProdotto();
-            prodotto.setTitolo(ordineList.get(i).getProdotto().getTitolo())
-                    .setQuantita(ordineList.get(i).getQuantita());
-            contenutoProdotto.add(prodotto);
+        if(isOrderUser(idOrdine)){
+            List<OrdineProdotti> ordineList = ordineProdottoRepository.findByOrdine(ordine.get());
+            List<ContenutoProdotto> contenutoProdotto = new ArrayList<>();
+            for(int i =0; i<ordineList.size();i++){
+                ContenutoProdotto prodotto=new ContenutoProdotto();
+                prodotto.setTitolo(ordineList.get(i).getProdotto().getTitolo())
+                        .setQuantita(ordineList.get(i).getQuantita());
+                contenutoProdotto.add(prodotto);
+            }
+            return contenutoProdotto;
         }
-        return contenutoProdotto;
+        throw new CustomException("The user does not have an order with this id", HttpStatus.NOT_FOUND);
+    }
+
+    public boolean isOrderUser(Long idOrdine){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
+        Account account = accountService.whoami(request);
+        List<Ordine> ordini = account.getOrdini();
+        for (Ordine o:ordini) {
+            if(o.getIdOrdine()==idOrdine){
+                return true;
+            }
+        }
+        return false;
     }
 }

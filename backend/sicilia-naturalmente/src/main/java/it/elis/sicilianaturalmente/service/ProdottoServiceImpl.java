@@ -58,8 +58,10 @@ public class ProdottoServiceImpl implements ProdottoService{
         if(!newProdotto.isEmpty() && newProdotto.get().getDeleted()==false){
             throw new CustomException("The product already exists", HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        prodotto.setDeleted(false)
-                .setIdProdotto(newProdotto.get().getIdProdotto());
+        prodotto.setDeleted(false);
+        if(!newProdotto.isEmpty() && newProdotto.get().getDeleted()==true){
+            prodotto.setIdProdotto(newProdotto.get().getIdProdotto());
+        }
         prodottoRepository.save(prodotto);
     }
 

@@ -15,5 +15,5 @@ public interface ProdottoService {
     public List<Prodotto> getByRegex(String titolo);
     public boolean checkAvailability(String titolo, Long quantita);
     public void updateQuantity(String titolo,Long quantita);
-    public void changeProduct(Prodotto prodotto);
+    public void changeProduct(String titolo,Float prezzo,String quantita);
 }

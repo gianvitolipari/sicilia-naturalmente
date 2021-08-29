@@ -20,12 +20,12 @@ public interface AccountService {
     public Account whoami(HttpServletRequest request);
     public List<Account> getAccounts();
     public void changeRole(String email);
-    public void addOnFavoriteList(Prodotto prodotto);
-    public void deleteProductFromFavoriteList(Prodotto prodotto);
-    public Account changeAddressInformation(Account account);
+    public void addOnFavoriteList(String titolo);
+    public void deleteProductFromFavoriteList(String titolo);
+    public Account changeAddressInformation(String indirizzo);
     public void addOnOrderList(Ordine ordine);
-    public void passwordRecovery(Account account) throws MessagingException;
-    public void changePassword(Account account, String password);
+    public void passwordRecovery(String email) throws MessagingException;
+    public void changePassword(String email, String password);
 
 
 }

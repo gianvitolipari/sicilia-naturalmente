@@ -63,7 +63,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String signup(Account account) {
-        if(account.getNome() || account.)
+        if(account.getNome()==null || account.getPassword()==null || account.getEmail()==null){
+            throw new CustomException("Check that you have entered all the required fields", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         if (!accountRepository.existsAccountByEmail(account.getEmail())) {
                         account.setPassword(passwordEncoder.encode(account.getPassword()));
                         accountRepository.save(account);
@@ -122,6 +124,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account search(Long id) {
+        if(id==null){
+            throw new CustomException("Insert a valid value for idAccount field", HttpStatus.BAD_REQUEST);
+        }
         if (accountRepository.findById(id).isEmpty()) {
             throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
         }
@@ -144,9 +149,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void addOnFavoriteList(Prodotto prodotto) {
-        Optional<Prodotto> newProdotto = prodottoRepository.findByTitolo(prodotto.getTitolo());
-        if(newProdotto.isEmpty() || prodotto.getDeleted()){
+    public void addOnFavoriteList(String titolo) {
+        Optional<Prodotto> newProdotto = prodottoRepository.findByTitolo(titolo);
+        if(newProdotto.isEmpty() || newProdotto.get().getDeleted()){
             throw new CustomException("Product not found", HttpStatus.NOT_FOUND);
         }
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
@@ -163,8 +168,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void deleteProductFromFavoriteList(Prodotto prodotto) {
-        Optional<Prodotto> newProdotto = prodottoRepository.findByTitolo(prodotto.getTitolo());
+    public void deleteProductFromFavoriteList(String titolo) {
+        Optional<Prodotto> newProdotto = prodottoRepository.findByTitolo(titolo);
         if(newProdotto.isEmpty() || newProdotto.get().getDeleted()){
             throw new CustomException("Product not found", HttpStatus.NOT_FOUND);
         }
@@ -182,11 +187,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account changeAddressInformation(Account account) {
+    public Account changeAddressInformation(String indirizzo) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
         Account newAccount = whoami(request);
-        newAccount.setIndirizzo(account.getIndirizzo());
+        newAccount.setIndirizzo(indirizzo);
         //accountRepository.deleteByEmail(newAccount.getEmail());
         accountRepository.save(newAccount);
         return newAccount;
@@ -204,33 +209,35 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
     }
 
+
+
     @Override
-    public void passwordRecovery(Account account) throws MessagingException {
-        if(accountRepository.existsAccountByEmail(account.getEmail())){
+    public void passwordRecovery(String email) throws MessagingException {
+        if(accountRepository.existsAccountByEmail(email)){
             String generatedPassword = randomString(8);
             String newPassword = passwordEncoder.encode(generatedPassword);
             String subject = "Gentile utente,\n" +
                     "\n" +
                     "Di seguito la sua nuova password:\n" +
                     "\n" + generatedPassword;
-                    emailService.sendMail(account.getEmail(),"Recupero password",subject);
-            changePassword(account,newPassword);
+                    emailService.sendMail(email,"Recupero password",subject);
+            changePassword(email,newPassword);
         }else{
             throw new CustomException("User not found", HttpStatus.NOT_FOUND);
         }
     }
 
     @Override
-    public void changePassword(Account account, String password) {
+    public void changePassword(String email, String password) {
         if(password.length()>5){
             Account newAccount = new Account();
-            if(account == null){
+            if(email == null){
                 password = passwordEncoder.encode(password);
                 HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                         .getRequest();
                 newAccount = whoami(request);
             }else{
-                newAccount = accountRepository.findByEmail(account.getEmail()).get();
+                newAccount = accountRepository.findByEmail(email).get();
             }
             newAccount.setPassword(password);
             //accountRepository.deleteByEmail(newAccount.getEmail());

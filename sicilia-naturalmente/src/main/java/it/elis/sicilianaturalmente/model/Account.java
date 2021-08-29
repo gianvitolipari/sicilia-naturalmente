@@ -51,25 +51,32 @@ public class Account {
         @OneToMany( cascade = {CascadeType.ALL})
         private List<Ordine> ordini;
 
-        public RegexData validateAccount(){
+        public  RegexData validateAccount(){
                 RegexData regexData=new RegexData().setValid(true);
-                Matcher validate = VALID_ONLY_LETTERS.matcher(this.nome);
-                if(!validate.find()){
-                        regexData.setValid(validate.find())
-                                .setError("The Name field has not been filled in with a correct format");
-                        return regexData;
+                Matcher validate;
+                if(this.nome!=null){
+                        validate = VALID_ONLY_LETTERS.matcher(this.nome);
+                        if(!validate.find()){
+                                regexData.setValid(validate.find())
+                                        .setError("The Name field has not been filled in with a correct format");
+                                return regexData;
+                        }
                 }
-                validate = VALID_EMAIL_ADDRESS_REGEX.matcher(this.email);
-                if(!validate.find()){
-                        regexData.setValid(validate.find())
-                                .setError("The Email field has not been filled in with a correct format");
-                        return regexData;
+                if (this.getEmail()!=null){
+                        validate = VALID_EMAIL_ADDRESS_REGEX.matcher(this.email);
+                        if(!validate.find()){
+                                regexData.setValid(validate.find())
+                                        .setError("The Email field has not been filled in with a correct format");
+                                return regexData;
+                        }
                 }
-                validate = VALID_MIN_AND_MAX_SIZE.matcher(this.password);
-                if(!validate.find()){
-                        regexData.setValid(validate.find())
-                                .setError("The Password field has not been filled in with a correct format, min lenght 6 characters and max 25 characters");
-                        return regexData;
+                if (this.getPassword()!=null){
+                        validate = VALID_MIN_AND_MAX_SIZE.matcher(this.password);
+                        if(!validate.find()){
+                                regexData.setValid(validate.find())
+                                        .setError("The Password field has not been filled in with a correct format, min lenght 6 characters and max 25 characters");
+                                return regexData;
+                        }
                 }
                 if(this.cognome != null){
                         validate = VALID_ONLY_LETTERS.matcher(this.cognome);
@@ -81,5 +88,37 @@ public class Account {
                 }
 
                 return regexData;
+        }
+
+        public static RegexData validateAddress(String indirizzo){
+                RegexData regexData = new RegexData().setValid(true);
+                Matcher validate;
+
+                if(indirizzo==null){
+                        regexData.setValid(false)
+                                .setError("The Address field has not been filled in with a correct format");
+                        return regexData;
+                }
+                return regexData;
+
+        }
+
+        public static RegexData validatePassword(String password){
+                RegexData regexData = new RegexData().setValid(true);
+                Matcher validate;
+
+                if(password==null){
+                        regexData.setValid(false)
+                                .setError("The Password field has not been filled in with a correct format");
+                        return regexData;
+                }
+                validate = VALID_MIN_AND_MAX_SIZE.matcher(password);
+                if(!validate.find()){
+                        regexData.setValid(validate.find())
+                                .setError("The Password field has not been filled in with a correct format");
+                        return regexData;
+                }else{
+                        return regexData;
+                }
         }
 }

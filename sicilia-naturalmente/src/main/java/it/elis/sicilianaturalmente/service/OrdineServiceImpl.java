@@ -70,6 +70,9 @@ public class OrdineServiceImpl implements OrdineService{
 
     @Override
     public List<ContenutoProdotto> getContenutoOrdine(Long idOrdine) {
+        if(idOrdine==null){
+            throw new CustomException("Please enter a correct order id", HttpStatus.BAD_REQUEST);
+        }
         Optional<Ordine> ordine = ordineRepository.findById(idOrdine);
         if(ordine == null){
             throw new CustomException("There is no order with this id", HttpStatus.NOT_FOUND);
@@ -89,8 +92,8 @@ public class OrdineServiceImpl implements OrdineService{
     }
 
     @Override
-    public List<Ordine> getOrders(Account account) {
-        Optional<Account> accountOptional = accountRepository.findByEmail(account.getEmail());
+    public List<Ordine> getOrders(String email) {
+        Optional<Account> accountOptional = accountRepository.findByEmail(email);
         if(accountOptional==null){
             throw new CustomException("There is no user with this e-mail", HttpStatus.NOT_FOUND);
         }
@@ -98,16 +101,16 @@ public class OrdineServiceImpl implements OrdineService{
     }
 
     @Override
-    public void changeStatus(Ordine ordine) {
-        Optional<Ordine> ordineOptional = ordineRepository.findById(ordine.getIdOrdine());
+    public void changeStatus(Long idOrdine,Stato statoPagamento) {
+        Optional<Ordine> ordineOptional = ordineRepository.findById(idOrdine);
         if(ordineOptional== null){
             throw new CustomException("There is no order with this id", HttpStatus.NOT_FOUND);
         }
-        if(ordine.getStato()==Stato.SPEDITO){
+        if(statoPagamento==Stato.SPEDITO){
             ordineOptional.get().setStato(Stato.SPEDITO);
-        }else if (ordine.getStato()==Stato.CONSEGNATO){
+        }else if (statoPagamento==Stato.CONSEGNATO){
             ordineOptional.get().setStato(Stato.CONSEGNATO);
-        }else if (ordine.getStato()==Stato.IN_PREPARAZIONE){
+        }else if (statoPagamento==Stato.IN_PREPARAZIONE){
             ordineOptional.get().setStato(Stato.IN_PREPARAZIONE);
         }else{
             throw new CustomException("Operation not allowed", HttpStatus.BAD_REQUEST);

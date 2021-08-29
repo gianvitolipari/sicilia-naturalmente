@@ -1,16 +1,24 @@
 package it.elis.sicilianaturalmente.controller;
 
 
+import it.elis.sicilianaturalmente.exception.CustomException;
 import it.elis.sicilianaturalmente.model.*;
 import it.elis.sicilianaturalmente.service.AccountService;
 import it.elis.sicilianaturalmente.service.OrdineService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static it.elis.sicilianaturalmente.model.Account.validateAddress;
+import static it.elis.sicilianaturalmente.model.Account.validatePassword;
+import static it.elis.sicilianaturalmente.model.Email.validateEmail;
+import static it.elis.sicilianaturalmente.model.Ordine.validateIdOrdine;
+import static it.elis.sicilianaturalmente.model.Prodotto.validateProductTitolo;
 
 @RestController
 @RequestMapping("/users")
@@ -24,9 +32,15 @@ public class UserController {
     @CrossOrigin(origins = {"http://localhost:3000"})
     @DeleteMapping(value = "/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> delete(@RequestBody Account account) {
-        accountService.deleteAccount(account.getEmail());
-        return ResponseEntity.ok("Cancellazione dell'Account " + account.getEmail().toString() + " effettuata correttamente");
+    public ResponseEntity<String> delete(@RequestParam("email") String email) {
+        RegexData regexData = validateEmail(email);
+        if(regexData.isValid())
+        {
+            accountService.deleteAccount(email);
+            return ResponseEntity.ok("Cancellazione dell'Account " + email + " effettuata correttamente");
+        }else{
+            return ResponseEntity.badRequest().body(regexData.getError());
+        }
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
@@ -53,35 +67,63 @@ public class UserController {
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/role")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> changeRole(@RequestBody Account account) {
-        accountService.changeRole(account.getEmail());
-        return ResponseEntity.ok("Permission changed successfully");
+    public ResponseEntity<String> changeRole(@RequestParam("email") String email) {
+        RegexData regexData = validateEmail(email);
+        if(regexData.isValid())
+        {
+            accountService.changeRole(email);
+            return ResponseEntity.ok("Permission changed successfully");
+           }else{
+            return ResponseEntity.badRequest().body(regexData.getError());
+        }
     }
 
 
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/favorite")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<String> addOnFavoriteList(@RequestBody Prodotto prodotto) {
-        accountService.addOnFavoriteList(prodotto);
-        return ResponseEntity.ok("Product inserted correctly in the list of favorites");
+    public ResponseEntity<String> addOnFavoriteList(@RequestParam String titolo) {
+        RegexData regexData = validateProductTitolo(titolo);
+        if(regexData.isValid())
+        {
+            accountService.addOnFavoriteList(titolo);
+            return ResponseEntity.ok("Product inserted correctly in the list of favorites");
+        }else{
+            return ResponseEntity.badRequest().body(regexData.getError());
+        }
+
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
     @DeleteMapping("/favorite/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<String> deleteProductFromFavoriteList(@RequestBody Prodotto prodotto) {
-        accountService.deleteProductFromFavoriteList(prodotto);
-        return ResponseEntity.ok("The product has been successfully removed from the favorites list");
+    public ResponseEntity<String> deleteProductFromFavoriteList(@RequestParam String titolo) {
+        RegexData regexData = validateProductTitolo(titolo);
+        if(regexData.isValid())
+        {
+            accountService.deleteProductFromFavoriteList(titolo);
+            return ResponseEntity.ok("The product has been successfully removed from the favorites list");
+        }else{
+            return ResponseEntity.badRequest().body(regexData.getError());
+        }
+
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/address")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<Account> changeAddressInformation(@RequestBody Account account) {
-        return ResponseEntity.ok(accountService.changeAddressInformation(account));
+    public ResponseEntity<String> changeAddressInformation(@RequestParam String indirizzo) {
+        RegexData regexData = validateAddress(indirizzo);
+        if(regexData.isValid())
+        {
+            accountService.changeAddressInformation(indirizzo);
+            return ResponseEntity.ok("The address information has been successfully changed");
+        }else{
+            return ResponseEntity.badRequest().body(regexData.getError());
+        }
     }
 
+    /*
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/order")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
@@ -90,12 +132,21 @@ public class UserController {
         return ResponseEntity.ok("Order inserted correctly in the list of favorites");
     }
 
+     */
+
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/changePassword")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<String> changePassword(@RequestBody Account account) {
-        accountService.changePassword(null,account.getPassword());
-        return ResponseEntity.ok("The password was changed correctly");
+    public ResponseEntity<String> changePassword(@RequestParam String password) {
+        RegexData regexData = validatePassword(password);
+        if(regexData.isValid())
+        {
+            accountService.changePassword(null,password);
+            return ResponseEntity.ok("The password was changed correctly");
+        }else{
+            return ResponseEntity.badRequest().body(regexData.getError());
+        }
+
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
@@ -107,16 +158,28 @@ public class UserController {
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/order/account")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<Ordine>> getOrders(@RequestBody Account account) {
-        return ResponseEntity.ok(ordineService.getOrders(account));
+    public ResponseEntity<List<Ordine>> getOrders(@RequestParam String email) {
+        RegexData regexData = validateEmail(email);
+        if(regexData.isValid())
+        {
+            return ResponseEntity.ok(ordineService.getOrders(email));
+        }else{
+            throw new CustomException(regexData.getError(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/order/status")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> getOrders(@RequestBody Ordine ordine) {
-        ordineService.changeStatus(ordine);
-        return ResponseEntity.ok("The order status was successfully changed");
+    public ResponseEntity<String> changeStatus(@RequestParam Long idOrdine, @RequestParam Stato statoPagamento) {
+        RegexData regexData = validateIdOrdine(idOrdine);
+        if(regexData.isValid())
+        {
+            ordineService.changeStatus(idOrdine,statoPagamento);
+            return ResponseEntity.ok("The order status was successfully changed");
+        }else{
+            throw new CustomException(regexData.getError(), HttpStatus.NOT_FOUND);
+        }
     }
 }
 

@@ -73,6 +73,9 @@ public class StripeServiceImp implements StripeService{
     @Override
     public void createPaymentIntent(PaymentData paymentData) throws Exception {
 
+        if(paymentData.getProducts()==null || paymentData.getPrice()==null){
+            throw new CustomException("Check that you have entered all the required fields", HttpStatus.BAD_REQUEST);
+        }
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
         Account account = accountService.whoami(request);
@@ -106,6 +109,7 @@ public class StripeServiceImp implements StripeService{
 
         }
 
+        
         accountService.addOnOrderList(ordine);
         for (Prodotto p:paymentData.getProducts()) {
             prodottoService.updateQuantity(p.getTitolo(),Long.valueOf(p.getQuantita()));
@@ -120,6 +124,9 @@ public class StripeServiceImp implements StripeService{
 
     @Override
     public PaymentMethod addPaymentMethod(String newPaymentMethod) throws Exception {
+        if(newPaymentMethod==null){
+            throw new CustomException("Please enter a valid payment method", HttpStatus.BAD_REQUEST);
+        }
         Stripe.apiKey = stripeApiKey;
         PaymentMethod paymentMethod =
                 PaymentMethod.retrieve(newPaymentMethod);

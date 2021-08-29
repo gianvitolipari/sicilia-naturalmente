@@ -2,6 +2,8 @@ package it.elis.sicilianaturalmente.controller;
 
 import it.elis.sicilianaturalmente.model.Formato;
 import it.elis.sicilianaturalmente.model.Prodotto;
+import it.elis.sicilianaturalmente.model.RegexData;
+import it.elis.sicilianaturalmente.model.Ruolo;
 import it.elis.sicilianaturalmente.service.AccountService;
 import it.elis.sicilianaturalmente.service.ProdottoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +38,13 @@ public class ProductController {
     @PostMapping("/create")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> createProduct(@RequestBody Prodotto prodotto) {
-        prodottoService.createProduct(prodotto);
-        return ResponseEntity.ok("Product creation successful");
+        RegexData regexData = prodotto.validateProduct();
+        if(regexData.isValid()){
+            prodottoService.createProduct(prodotto);
+            return ResponseEntity.ok("Product creation successful");
+        }else{
+            return ResponseEntity.badRequest().body(regexData.getError());
+        }
     }
 
     @CrossOrigin(origins = {"http://localhost:3000"})
@@ -69,9 +76,17 @@ public class ProductController {
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/editProduct")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> changeProduct(@RequestBody Prodotto prodotto) {
-        prodottoService.changeProduct(prodotto);
-        return ResponseEntity.ok("Correctly modified product");
+    public ResponseEntity<String> changeProduct(@RequestParam("titolo") String titolo,@RequestParam("prezzo") Float prezzo, @RequestParam("quantita") String quantita) {
+        Prodotto prodotto = new Prodotto().setQuantita(quantita)
+                .setPrezzo(prezzo)
+                .setTitolo(titolo);
+        RegexData regexData = prodotto.validateProduct();
+        if(regexData.isValid()){
+            prodottoService.changeProduct(titolo,prezzo,quantita);
+            return ResponseEntity.ok("Correctly modified product");
+        }else{
+            return ResponseEntity.badRequest().body(regexData.getError());
+        }
     }
 
 }

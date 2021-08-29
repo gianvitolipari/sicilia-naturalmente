@@ -1,8 +1,6 @@
 package it.elis.sicilianaturalmente.controller;
 
-import it.elis.sicilianaturalmente.model.Account;
-import it.elis.sicilianaturalmente.model.Email;
-import it.elis.sicilianaturalmente.model.Prodotto;
+import it.elis.sicilianaturalmente.model.*;
 import it.elis.sicilianaturalmente.service.AccountService;
 import it.elis.sicilianaturalmente.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+
+import static it.elis.sicilianaturalmente.model.Email.validateEmail;
 
 /**
  * Created by abburi on 6/18/17.
@@ -36,14 +36,19 @@ public class SendEmailController {
 
     @RequestMapping(value = "/sendEmail" , method = RequestMethod.POST)
     public ResponseEntity<String> sendEmail(@RequestBody Email email) {
-        try {
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-                    .getRequest();
-            Account account = accountService.whoami(request);
-            emailService.sendMail(toEmail, "Nuova richiesta dall'utente: " + account.getEmail() , email.getMessage());
-        } catch (MessagingException e) {
-            e.printStackTrace();
+        RegexData regexData = validateEmail(email.getToEmail());
+        if(regexData.isValid()){
+            try {
+                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                        .getRequest();
+                Account account = accountService.whoami(request);
+                emailService.sendMail(toEmail, "Nuova richiesta dall'utente: " + account.getEmail() , email.getMessage());
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+            return ResponseEntity.ok("Email correctly sent");
+        }else{
+            return ResponseEntity.badRequest().body(regexData.getError());
         }
-        return ResponseEntity.ok("Email correctly sent");
     }
 }

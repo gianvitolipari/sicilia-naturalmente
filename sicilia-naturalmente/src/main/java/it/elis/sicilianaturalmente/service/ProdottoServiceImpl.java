@@ -51,6 +51,9 @@ public class ProdottoServiceImpl implements ProdottoService{
 
     @Override
     public void createProduct(Prodotto prodotto) {
+        if(prodotto.getTitolo()==null || prodotto.getPrezzo()==null || prodotto.getQuantita()==null){
+            throw new CustomException("Check that you have entered all the required fields", HttpStatus.BAD_REQUEST);
+        }
         Optional<Prodotto> newProdotto = prodottoRepository.findByTitolo(prodotto.getTitolo());
         if(!newProdotto.isEmpty() && newProdotto.get().getDeleted()==false){
             throw new CustomException("The product already exists", HttpStatus.UNPROCESSABLE_ENTITY);
@@ -62,6 +65,9 @@ public class ProdottoServiceImpl implements ProdottoService{
 
     @Override
     public void deleteProduct(String titolo) {
+        if(titolo==null){
+            throw new CustomException("Please enter a valid title", HttpStatus.BAD_REQUEST);
+        }
         Optional<Prodotto> prodotto = prodottoRepository.findByTitolo(titolo);
         if(prodotto.isEmpty() || prodotto.get().getDeleted()){
             throw new CustomException("There is no product with this idProduct", HttpStatus.NOT_FOUND);
@@ -140,14 +146,14 @@ public class ProdottoServiceImpl implements ProdottoService{
     }
 
     @Override
-    public void changeProduct(Prodotto prodotto) {
-        Optional<Prodotto> prodottoOptional = prodottoRepository.findByTitolo(prodotto.getTitolo());
+    public void changeProduct(String titolo,Float prezzo,String quantita) {
+        Optional<Prodotto> prodottoOptional = prodottoRepository.findByTitolo(titolo);
         if(prodottoOptional==null){
             throw new CustomException("There is no product with this idProduct", HttpStatus.NOT_FOUND);
         }
         Prodotto prodotto1= prodottoOptional.get();
-        prodotto1.setQuantita(prodotto.getQuantita())
-                .setPrezzo(prodotto.getPrezzo());
+        prodotto1.setQuantita(quantita)
+                .setPrezzo(prezzo);
         prodottoRepository.save(prodotto1);
     }
 

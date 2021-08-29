@@ -23,6 +23,8 @@ public class LoginController {
     AccountService accountService;
 
     //@CrossOrigin(origins = {"http://localhost:3000"})
+
+    //API for signup. An Account object is passed to register, the "email", "name" and "password" fields are required
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody Account account) {
         RegexData regexData = account.validateAccount();
@@ -35,16 +37,18 @@ public class LoginController {
 
     }
 
+    //API used to log in. The email and password fields are passed to check if the user is actually registered in the system
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/signin")
-    public ResponseEntity<String> signin(@RequestBody Account account) {
-        return ResponseEntity.ok(accountService.signin(account.getEmail(), account.getPassword()));
+    public ResponseEntity<String> signin(@RequestParam("email") String email,@RequestParam("password") String password) {
+        return ResponseEntity.ok(accountService.signin(email, password));
     }
 
+    //API used to recover the password when the user forgets it. The email associated with the user for which the password has been forgotten will be sent
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/forgotten")
-    public ResponseEntity<String> passwordRecovery(@RequestBody Account account) throws MessagingException {
-        accountService.passwordRecovery(account);
+    public ResponseEntity<String> passwordRecovery(@RequestParam("email") String email) throws MessagingException {
+        accountService.passwordRecovery(email);
         return ResponseEntity.ok("A password recovery e-mail has been sent");
     }
 

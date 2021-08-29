@@ -82,7 +82,7 @@ public class UserController {
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/favorite")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<String> addOnFavoriteList(@RequestParam String titolo) {
+    public ResponseEntity<String> addOnFavoriteList(@RequestParam("titolo") String titolo) {
         RegexData regexData = validateProductTitolo(titolo);
         if(regexData.isValid())
         {

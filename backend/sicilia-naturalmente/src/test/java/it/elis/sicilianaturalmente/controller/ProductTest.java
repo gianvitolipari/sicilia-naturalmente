@@ -1,9 +1,6 @@
 package it.elis.sicilianaturalmente.controller;
 
-import it.elis.sicilianaturalmente.model.Account;
-import it.elis.sicilianaturalmente.model.Formato;
-import it.elis.sicilianaturalmente.model.Prodotto;
-import it.elis.sicilianaturalmente.model.Ruolo;
+import it.elis.sicilianaturalmente.model.*;
 import it.elis.sicilianaturalmente.repository.AccountRepository;
 import it.elis.sicilianaturalmente.security.JwtTokenProvider;
 import it.elis.sicilianaturalmente.service.AccountService;
@@ -111,10 +108,10 @@ public class ProductTest {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("prodotto", prodotto);
         headers.setContentType(MediaType.APPLICATION_JSON);
-
+        HttpEntity<Prodotto> httpEntity = new HttpEntity<>(prodotto,headers);
 
         ResponseEntity<String> response;
-        response = restTemplate.exchange("/product/create", HttpMethod.POST, new HttpEntity<>(body, headers), String.class);
+        response = restTemplate.exchange("/product/create", HttpMethod.POST, httpEntity, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -148,4 +145,45 @@ public class ProductTest {
         assertEquals(product, response.getBody());
     }
 
+    @Test
+    public void orderByPrice() {
+        List<Prodotto> product = new ArrayList<>();
+        Prodotto prodotto = new Prodotto().setTitolo("titolo").setPrezzo(3.0F).setQuantita("2");
+        product.add(prodotto);
+        given(prodottoService.orderByPrice()).willReturn(product);
+
+        ResponseEntity<List<Prodotto>> response;
+        response = restTemplate.exchange("/product/price", HttpMethod.GET, null, new ParameterizedTypeReference<List<Prodotto>>() {});
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(product, response.getBody());
+    }
+
+    @Test
+    public void searchProduct() {
+        List<Prodotto> product = new ArrayList<>();
+        Prodotto prodotto = new Prodotto().setTitolo("titolo").setPrezzo(3.0F).setQuantita("2");
+        product.add(prodotto);
+        given(prodottoService.getByRegex(prodotto.getTitolo())).willReturn(product);
+
+        ResponseEntity<List<Prodotto>> response;
+        response = restTemplate.exchange("/product/research/{titolo}", HttpMethod.GET, null, new ParameterizedTypeReference<List<Prodotto>>() {},prodotto.getTitolo());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(product, response.getBody());
+    }
+
+    @Test
+    public void changeProduct() {
+        String responseText="Correctly modified product";
+        Prodotto prodotto = new Prodotto().setTitolo("titolo").setPrezzo(3.0F).setQuantita("2");
+
+        ResponseEntity<String> response;
+        response = restTemplate.exchange("/product/editProduct?titolo={titolo}&prezzo={prezzo}&quantita={quantita}", HttpMethod.POST, new HttpEntity<>(null, headers), String.class,prodotto.getTitolo(),prodotto.getPrezzo(),prodotto.getQuantita());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(responseText, response.getBody());
+    }
 }

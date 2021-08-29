@@ -52,7 +52,7 @@ public class UserController {
 
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping(value = "/accounts")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Account>> getAccounts() {
         return ResponseEntity.ok(accountService.getAccounts());
     }

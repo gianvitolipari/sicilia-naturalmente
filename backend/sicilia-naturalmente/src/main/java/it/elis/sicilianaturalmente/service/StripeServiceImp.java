@@ -109,7 +109,7 @@ public class StripeServiceImp implements StripeService{
 
         }
 
-        
+
         accountService.addOnOrderList(ordine);
         for (Prodotto p:paymentData.getProducts()) {
             prodottoService.updateQuantity(p.getTitolo(),Long.valueOf(p.getQuantita()));

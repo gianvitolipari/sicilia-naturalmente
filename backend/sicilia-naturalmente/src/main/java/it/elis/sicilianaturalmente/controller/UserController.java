@@ -112,7 +112,7 @@ public class UserController {
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/address")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<String> changeAddressInformation(@RequestParam String indirizzo) {
+    public ResponseEntity<String> changeAddressInformation(@RequestParam("indirizzo") String indirizzo) {
         RegexData regexData = validateAddress(indirizzo);
         if(regexData.isValid())
         {
@@ -137,7 +137,7 @@ public class UserController {
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/changePassword")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<String> changePassword(@RequestParam String password) {
+    public ResponseEntity<String> changePassword(@RequestParam("password") String password) {
         RegexData regexData = validatePassword(password);
         if(regexData.isValid())
         {
@@ -158,7 +158,7 @@ public class UserController {
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/order/account")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<Ordine>> getOrders(@RequestParam String email) {
+    public ResponseEntity<List<Ordine>> getOrders(@RequestParam("email") String email) {
         RegexData regexData = validateEmail(email);
         if(regexData.isValid())
         {
@@ -171,7 +171,7 @@ public class UserController {
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/order/status")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> changeStatus(@RequestParam Long idOrdine, @RequestParam Stato statoPagamento) {
+    public ResponseEntity<String> changeStatus(@RequestParam("idOrdine") Long idOrdine, @RequestParam("statoPagamento") Stato statoPagamento) {
         RegexData regexData = validateIdOrdine(idOrdine);
         if(regexData.isValid())
         {

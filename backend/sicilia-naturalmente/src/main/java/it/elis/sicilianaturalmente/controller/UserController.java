@@ -97,7 +97,7 @@ public class UserController {
     @CrossOrigin(origins = {"http://localhost:3000"})
     @DeleteMapping("/favorite/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<String> deleteProductFromFavoriteList(@RequestParam String titolo) {
+    public ResponseEntity<String> deleteProductFromFavoriteList(@RequestParam("titolo") String titolo) {
         RegexData regexData = validateProductTitolo(titolo);
         if(regexData.isValid())
         {

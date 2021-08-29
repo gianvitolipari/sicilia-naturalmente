@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -49,48 +50,10 @@ public class LoginTest {
 
     private final HttpHeaders headers = new HttpHeaders();
 
-    private final String email = "gianvito@gmail.com";
+    private final String email = "test@gmail.com";
     private final String password = "test1234";
-    private final String nome = "Gianvito";
-/*
-    @BeforeEach
-    public void beforeEach() {
-        accountRepository.deleteAll();
+    private final String nome = "test";
 
-        String email = "gianvito99.gg@gmail.com";
-        String password = "test1234";
-        Account account = accountRepository.save(new Account().setEmail(email).setPassword(passwordEncoder.encode(password)).setNome("Gianvito").setCognome("Grassi").setRuolo(Ruolo.ROLE_ADMIN));
-
-        headers.clear();
-        String token = accountService.signin(email, password);
-        headers.add("Authorization", "Bearer " + token);
-    }
-/*
-    @Test
-    public void getProfile() {
-        // Test 403
-
-        ResponseEntity<String> response403 =
-                restTemplate.exchange(
-                        "/api/professor/profile", HttpMethod.GET, null, String.class);
-
-        assertEquals(HttpStatus.FORBIDDEN, response403.getStatusCode());
-
-        // Test 200
-
-        Professor professor = new Professor(1L, 1L, "Professor name", "Professor surname", null);
-        given(professorService.getProfile()).willReturn(professor);
-
-        ResponseEntity<Professor> response200 =
-                restTemplate.exchange(
-                        "/api/professor/profile", HttpMethod.GET, new HttpEntity<>(null, headers), Professor.class);
-
-        assertEquals(HttpStatus.OK, response200.getStatusCode());
-        assertNotNull(response200.getBody());
-        assertEquals(professor, response200.getBody());
-    }
-
- */
 @Test
 void signup() {
     String token = "test";
@@ -124,13 +87,10 @@ void signup() {
     @Test
     void passwordRecovery() {
         String responseText = "A password recovery e-mail has been sent";
-        given(accountService.passwordRecovery(any())).willReturn(responseText);
-
 
         ResponseEntity<String> response =
                 restTemplate.exchange(
-                        "/forgotten?email={email}", HttpMethod.POST, null,
-                        String.class, email);
+                        "/login/forgotten?email={email}", HttpMethod.POST, null, String.class, email);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());

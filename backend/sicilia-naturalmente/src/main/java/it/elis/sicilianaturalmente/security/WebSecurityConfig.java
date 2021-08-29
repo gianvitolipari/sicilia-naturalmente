@@ -9,9 +9,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -30,6 +34,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // No session will be created or used by spring security
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        http.cors().configurationSource(r->getCorsConfiguration());
+
         // Entry points
         http.authorizeRequests()//
                 .antMatchers("/login/signin").permitAll()//
@@ -38,9 +44,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/product/format/**").permitAll()
                 .antMatchers("/product/price").permitAll()
                 .antMatchers("/product/").permitAll()
+                .antMatchers("/product/**").permitAll()
                 .antMatchers("/product/research/**").permitAll()
                 .antMatchers("/testSendEmail").permitAll()
-                .antMatchers("/login/forgotten").permitAll()
+                .antMatchers("/login/forgotten**").permitAll()
                 //.antMatchers("/users/login").permitAll()
                 // Disallow everything else..
                 .anyRequest().authenticated();
@@ -81,5 +88,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
+    private CorsConfiguration getCorsConfiguration(){
+         CorsConfiguration corsConfiguration =new CorsConfiguration();
+         corsConfiguration.setAllowCredentials(true);
+         corsConfiguration.setAllowedOrigins(Arrays.asList("*"));
+         corsConfiguration.setAllowedHeaders(Arrays.asList("Origin","Access-Control-Allow-Origin","Content-Type","Accept","Authorization","Origin, Accept","X-Requesed-With","Access-Control-Request-Method","Access-Control-Request-Headers"));
+         corsConfiguration.setExposedHeaders(Arrays.asList("Origin","Content-Type","Accept","Authorization","Access-Control-Allow-Origin","Access-Control-Allow-Origin","Access-Control-Allow-Credentials"));
+         corsConfiguration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
+         return corsConfiguration;
+    }
 }

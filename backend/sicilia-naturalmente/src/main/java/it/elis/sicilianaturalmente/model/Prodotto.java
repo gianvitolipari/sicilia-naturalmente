@@ -31,9 +31,11 @@ public class Prodotto {
     @Column(name = "descrizione")
     private String descrizione;
 
+    @Lob
     @Column(name = "immagine",columnDefinition="LONGTEXT")
     private String immagine;
 
+    @Lob
     @Column(name = "immagineRetro",columnDefinition="LONGTEXT")
     private String immagineRetro;
 

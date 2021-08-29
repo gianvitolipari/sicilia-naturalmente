@@ -1,6 +1,7 @@
 package it.elis.sicilianaturalmente.controller;
 
 import it.elis.sicilianaturalmente.model.Account;
+import it.elis.sicilianaturalmente.model.Formato;
 import it.elis.sicilianaturalmente.model.Prodotto;
 import it.elis.sicilianaturalmente.model.Ruolo;
 import it.elis.sicilianaturalmente.repository.AccountRepository;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -119,5 +121,31 @@ public class ProductTest {
         assertEquals(responseText, response.getBody());
     }
 
+    @Test
+    public void deleteProduct() {
+        String responseText="Product deleted successfully";
+        Prodotto p = new Prodotto().setTitolo("titolo");
+        ResponseEntity<String> response;
+        response = restTemplate.exchange("/product/delete/{titolo}", HttpMethod.DELETE, new HttpEntity<>(null, headers), String.class,p.getTitolo());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(responseText, response.getBody());
+    }
+
+    @Test
+    public void getFormato() {
+        List<Prodotto> product = new ArrayList<>();
+        Prodotto prodotto = new Prodotto().setTitolo("titolo").setPrezzo(3.0F).setQuantita("2").setFormato(Formato.CORTA);
+        product.add(prodotto);
+        given(prodottoService.getFormato(prodotto.getFormato())).willReturn(product);
+
+        ResponseEntity<List<Prodotto>> response;
+        response = restTemplate.exchange("/product/format/{formato}", HttpMethod.GET, null, new ParameterizedTypeReference<List<Prodotto>>() {} ,prodotto.getFormato());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(product, response.getBody());
+    }
 
 }

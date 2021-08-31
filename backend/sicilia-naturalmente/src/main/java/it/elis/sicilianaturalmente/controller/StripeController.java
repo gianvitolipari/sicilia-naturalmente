@@ -23,6 +23,7 @@ public class StripeController {
         this.stripeService = stripeService;
     }
 
+    //API used to receive the custumer_id useful in order to associate a payment card
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/customer_id")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
@@ -31,6 +32,9 @@ public class StripeController {
         return ResponseEntity.ok(stripeCustomer.getId());
     }
 
+    //API used to create a payment intents, the front-end will have to pass a payment
+    // method, the checkout price and the list of products to be purchased with the
+    // additional quantity of each
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/payment_intents")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
@@ -39,6 +43,7 @@ public class StripeController {
         return ResponseEntity.ok("Payment successful");
     }
 
+    //API used to add a payment method to a particular user
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/customer")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
@@ -47,6 +52,7 @@ public class StripeController {
         return ResponseEntity.ok("Il metodo di pagamento con id:"+newPaymentMethod.getId()+" e' stato aggiunto correttamente");
     }
 
+    //API used to receive all information relating to the payment data of the user making the request
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/customer")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
@@ -55,6 +61,7 @@ public class StripeController {
         return ResponseEntity.ok(stripeCustomer.toString());
     }
 
+    //API used to receive all payment methods associated with the user making the request
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/customer_payment_methods")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")

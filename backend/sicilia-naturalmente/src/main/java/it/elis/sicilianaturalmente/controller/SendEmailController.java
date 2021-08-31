@@ -18,9 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import static it.elis.sicilianaturalmente.model.Email.validateEmail;
 
-/**
- * Created by abburi on 6/18/17.
- */
 
 @RestController
 public class SendEmailController {
@@ -34,6 +31,7 @@ public class SendEmailController {
     @Value("${mail.from.address}")
     private String toEmail;
 
+    //API used in order to send an e-mail
     @RequestMapping(value = "/sendEmail" , method = RequestMethod.POST)
     public ResponseEntity<String> sendEmail(@RequestBody Email email) {
         RegexData regexData = validateEmail(email.getToEmail());

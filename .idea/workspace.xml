@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="c5b61cab-ea33-4c89-be15-93cd4f774517" name="Changes" comment="upload project">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/sicilia-naturalmente/src/main/java/it/elis/sicilianaturalmente/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/sicilia-naturalmente/src/main/java/it/elis/sicilianaturalmente/controller/ProductController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/sicilia-naturalmente/src/main/java/it/elis/sicilianaturalmente/controller/SendEmailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/sicilia-naturalmente/src/main/java/it/elis/sicilianaturalmente/controller/SendEmailController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/sicilia-naturalmente/src/main/java/it/elis/sicilianaturalmente/controller/StripeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/sicilia-naturalmente/src/main/java/it/elis/sicilianaturalmente/controller/StripeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/sicilia-naturalmente/src/main/java/it/elis/sicilianaturalmente/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/sicilia-naturalmente/src/main/java/it/elis/sicilianaturalmente/controller/UserController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +41,7 @@
       <option name="presentableId" value="Default" />
       <updated>1630412138566</updated>
       <workItem from="1630412142224" duration="186000" />
-      <workItem from="1630436950153" duration="321000" />
+      <workItem from="1630436950153" duration="1400000" />
     </task>
     <task id="LOCAL-00001" summary="upload project">
       <created>1630412248711</created>

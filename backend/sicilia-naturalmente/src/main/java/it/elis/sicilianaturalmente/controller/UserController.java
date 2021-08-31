@@ -29,6 +29,7 @@ public class UserController {
     @Autowired
     AccountService accountService;
 
+    //API used to delete a user, action allowed if you are an admin
     @CrossOrigin(origins = {"http://localhost:3000"})
     @DeleteMapping(value = "/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -43,6 +44,8 @@ public class UserController {
         }
     }
 
+    //API used to perform to receive the data of a specific user,
+    // the search is carried out for the email field, action allowed if you are an admin
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -50,6 +53,7 @@ public class UserController {
         return ResponseEntity.ok(accountService.search(Long.valueOf(id).longValue()));
     }
 
+    //API used to perform to receive the list of all users on the system, action allowed if you are an admin
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping(value = "/accounts")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -57,6 +61,7 @@ public class UserController {
         return ResponseEntity.ok(accountService.getAccounts());
     }
 
+    //API used to receive information about the user making the request
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping(value = "/me")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
@@ -64,6 +69,7 @@ public class UserController {
         return ResponseEntity.ok(accountService.whoami(req));
     }
 
+    //API used to change the role of a particular user, action allowed only to the admin
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/role")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -78,7 +84,8 @@ public class UserController {
         }
     }
 
-
+    //API used to insert a specific product into a list of favorites associated
+    // with the user making the request
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/favorite")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
@@ -94,6 +101,8 @@ public class UserController {
 
     }
 
+    //API used to delete a specific product from a list of favorites associated
+    // with the user making the request
     @CrossOrigin(origins = {"http://localhost:3000"})
     @DeleteMapping("/favorite/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
@@ -109,6 +118,7 @@ public class UserController {
 
     }
 
+    //API used to change the shipping address associated with the user making the request
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/address")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
@@ -123,17 +133,7 @@ public class UserController {
         }
     }
 
-    /*
-    @CrossOrigin(origins = {"http://localhost:3000"})
-    @PostMapping("/order")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<String> addOnFavoriteList(@RequestBody Ordine ordine) {
-        accountService.addOnOrderList(ordine);
-        return ResponseEntity.ok("Order inserted correctly in the list of favorites");
-    }
-
-     */
-
+    //API used to change the password associated with the user making the request
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/changePassword")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
@@ -149,12 +149,14 @@ public class UserController {
 
     }
 
+    //API used to receive all data relating to the content of products of a given order
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/order/content/{idOrdine}")
     public ResponseEntity<List<ContenutoProdotto>> getContenutoOrdine(@PathVariable Long idOrdine) {
         return ResponseEntity.ok(ordineService.getContenutoOrdine(idOrdine));
     }
 
+    //API used to receive all orders associated with an account
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/order/account")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -168,6 +170,7 @@ public class UserController {
         }
     }
 
+    //API used to change the status of an order
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/order/status")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

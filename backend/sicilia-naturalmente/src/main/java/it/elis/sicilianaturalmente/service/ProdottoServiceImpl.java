@@ -185,7 +185,7 @@ public class ProdottoServiceImpl implements ProdottoService{
         Long quantitaDisponibile = Long.valueOf(prodotto.get().getQuantita());
         String newQuantita = String.valueOf(quantitaDisponibile-quantita);
         prodotto.get().setQuantita(newQuantita);
-        prodottoRepository.deleteByTitolo(titolo);
+        //prodottoRepository.deleteByTitolo(titolo);
         prodottoRepository.save(prodotto.get());
     }
 

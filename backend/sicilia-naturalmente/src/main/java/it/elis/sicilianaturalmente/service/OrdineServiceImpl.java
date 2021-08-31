@@ -37,6 +37,11 @@ public class OrdineServiceImpl implements OrdineService{
     AccountRepository accountRepository;
 
 
+    /**
+     * The method creates a new order
+     * @param paymentData
+     * @return Ordine
+     */
     @Override
     public Ordine createOrder(PaymentData paymentData) {
         Date dt = new Date();
@@ -68,6 +73,11 @@ public class OrdineServiceImpl implements OrdineService{
         return ordine;
     }
 
+    /**
+     * The method returns all the products associated with a given order
+     * @param idOrdine
+     * @return List<ContenutoOrdine>
+     */
     @Override
     public List<ContenutoProdotto> getContenutoOrdine(Long idOrdine) {
         if(idOrdine==null){
@@ -91,6 +101,11 @@ public class OrdineServiceImpl implements OrdineService{
         throw new CustomException("The user does not have an order with this id", HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * The method returns all orders associated with a particular user
+     * @param email
+     * @return List<Ordine>
+     */
     @Override
     public List<Ordine> getOrders(String email) {
         Optional<Account> accountOptional = accountRepository.findByEmail(email);
@@ -100,6 +115,11 @@ public class OrdineServiceImpl implements OrdineService{
         return accountOptional.get().getOrdini();
     }
 
+    /**
+     * The method changes the status of a given order
+     * @param idOrdine
+     * @param statoPagamento
+     */
     @Override
     public void changeStatus(Long idOrdine,Stato statoPagamento) {
         Optional<Ordine> ordineOptional = ordineRepository.findById(idOrdine);

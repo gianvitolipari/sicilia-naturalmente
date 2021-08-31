@@ -38,11 +38,11 @@ public class StripeServiceImp implements StripeService{
     @Autowired
     private EmailService emailService;
 
-   /* @Autowired
-    StripeServiceImp() {
-        Stripe.apiKey = "sk_test_uTAM1qndRDbiJRowe8dJf6x9";
-    }*/
-
+    /**
+     * The method creates a customer stripe
+     * @return Customer
+     * @throws Exception
+     */
     @Override
     public Customer createCustomer() throws Exception {
         Stripe.apiKey = stripeApiKey;
@@ -69,7 +69,11 @@ public class StripeServiceImp implements StripeService{
     }
 
 
-
+    /**
+     * The method creates a payment intents
+     * @param paymentData
+     * @throws Exception
+     */
     @Override
     public void createPaymentIntent(PaymentData paymentData) throws Exception {
 
@@ -122,6 +126,12 @@ public class StripeServiceImp implements StripeService{
     }
 
 
+    /**
+     * The method creates a payment method
+     * @param newPaymentMethod
+     * @return PaymentMethod
+     * @throws Exception
+     */
     @Override
     public PaymentMethod addPaymentMethod(String newPaymentMethod) throws Exception {
         if(newPaymentMethod==null){
@@ -139,6 +149,11 @@ public class StripeServiceImp implements StripeService{
         return updatedPaymentMethod;
     }
 
+    /**
+     * The method returns the data associated with the card for the user making the request
+     * @return Customer
+     * @throws Exception
+     */
     @Override
     public Customer getCustomer() throws Exception {
         Stripe.apiKey = stripeApiKey;
@@ -148,6 +163,11 @@ public class StripeServiceImp implements StripeService{
         return customer;
     }
 
+    /**
+     * The method returns the list of payment methods associated with a particular user
+     * @return List<PaymentMethodData>
+     * @throws Exception
+     */
     @Override
     public List<PaymentMethodData> getPaymentMethod() throws Exception {
         Stripe.apiKey = stripeApiKey;

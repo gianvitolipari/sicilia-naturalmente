@@ -25,6 +25,11 @@ public class ProdottoServiceImpl implements ProdottoService{
     @Autowired
     AccountService accountService;
 
+    /**
+     * The method returns a product, the search is carried out by product title
+     * @param titolo
+     * @return Prodotto
+     */
     @Override
     public Prodotto getProductByTitolo(String titolo) {
         Optional<Prodotto> prodotto = prodottoRepository.findByTitolo(titolo);
@@ -34,6 +39,10 @@ public class ProdottoServiceImpl implements ProdottoService{
         return prodottoRepository.findByTitolo(titolo).orElseThrow(() -> new RuntimeException());
     }
 
+    /**
+     * The method returns the list of all the products present in the system
+     * @return List<Prodotto>
+     */
     @Override
     public List<Prodotto> getAllProduct() {
         List<Prodotto> prodotti = prodottoRepository.findAll();
@@ -49,6 +58,10 @@ public class ProdottoServiceImpl implements ProdottoService{
         return prodottiDisponibili;
     }
 
+    /**
+     * The method creates a product
+     * @param prodotto
+     */
     @Override
     public void createProduct(Prodotto prodotto) {
         if(prodotto.getTitolo()==null || prodotto.getPrezzo()==null || prodotto.getQuantita()==null){
@@ -65,6 +78,10 @@ public class ProdottoServiceImpl implements ProdottoService{
         prodottoRepository.save(prodotto);
     }
 
+    /**
+     * The method removes a product
+     * @param titolo
+     */
     @Override
     public void deleteProduct(String titolo) {
         if(titolo==null){
@@ -78,6 +95,11 @@ public class ProdottoServiceImpl implements ProdottoService{
         prodottoRepository.save(prodotto.get());
     }
 
+    /**
+     * The method returns the list of all products associated with the format
+     * @param formato
+     * @return List<Prodotto>
+     */
     @Override
     public List<Prodotto> getFormato(Formato formato) {
         if(prodottoRepository.findAllByFormato(formato).isEmpty()){
@@ -93,6 +115,10 @@ public class ProdottoServiceImpl implements ProdottoService{
         return prodottiDisponibili;
     }
 
+    /**
+     * The method returns the list of products sorted in ascending order by price
+     * @return List<Prodotto>
+     */
     @Override
     public List<Prodotto> orderByPrice() {
         if(prodottoRepository.findAll().isEmpty()){
@@ -108,6 +134,11 @@ public class ProdottoServiceImpl implements ProdottoService{
         return prodottiDisponibili;
     }
 
+    /**
+     * The method searches for products through a regex
+     * @param titolo
+     * @return List<Prodotto>
+     */
     @Override
     public List<Prodotto> getByRegex(String titolo) {
         if(titolo != null){
@@ -124,6 +155,12 @@ public class ProdottoServiceImpl implements ProdottoService{
         return getAllProduct();
     }
 
+    /**
+     * The method returns a Boolean value, based on whether the entered product quantity is available
+     * @param titolo
+     * @param quantita
+     * @return if the product is Availability
+     */
     @Override
     public boolean checkAvailability(String titolo, Long quantita) {
         Optional<Prodotto> prodotto = prodottoRepository.findByTitolo(titolo);
@@ -134,6 +171,11 @@ public class ProdottoServiceImpl implements ProdottoService{
         return false;
     }
 
+    /**
+     * The method updates the quantity of the product
+     * @param titolo
+     * @param quantita
+     */
     @Override
     public void updateQuantity(String titolo, Long quantita) {
         if(!checkAvailability(titolo,quantita)){
@@ -147,6 +189,12 @@ public class ProdottoServiceImpl implements ProdottoService{
         prodottoRepository.save(prodotto.get());
     }
 
+    /**
+     * The method updates the quantity of the product and the price of the product associated with the product title
+     * @param titolo
+     * @param prezzo
+     * @param quantita
+     */
     @Override
     public void changeProduct(String titolo,Float prezzo,String quantita) {
         Optional<Prodotto> prodottoOptional = prodottoRepository.findByTitolo(titolo);

@@ -51,16 +51,21 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private EmailService emailService;
 
-    @Override
-    public Account getAccount(String nome) {
-        return accountRepository.findByNome(nome).orElseThrow(() -> new RuntimeException());
-    }
-
+    /**
+     * The method returns an Account by searching by user email
+     * @param email
+     * @return Account
+     */
     @Override
     public Account getAccountByEmail(String email) {
         return accountRepository.findByEmail(email).orElseThrow(() -> new RuntimeException());
     }
 
+    /**
+     * The method makes a registration within the system
+     * @param account
+     * @return String token
+     */
     @Override
     public String signup(Account account) {
         if(account.getNome()==null || account.getPassword()==null || account.getEmail()==null){
@@ -75,6 +80,10 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    /**
+     * The method changes the role of a particular user searched for by email
+     * @param email
+     */
     @Override
     public void changeRole(String email) {
         Optional<Account> optionalAccount = accountRepository.findByEmail(email);
@@ -96,6 +105,12 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
     }
 
+    /**
+     * The method logs in through the email and password fields
+     * @param email
+     * @param password
+     * @return String token
+     */
     @Override
     public String signin(String email, String password) {
         try {
@@ -106,6 +121,10 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    /**
+     * The method deletes a particular account through the email field
+     * @param email
+     */
     @Override
     public void deleteAccount(String email) {
         Optional<Account> account = accountRepository.findByEmail(email);
@@ -122,6 +141,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
+    /**
+     * The method searches for a particular user through the email field
+     * @param id
+     * @return Account
+     */
     @Override
     public Account search(Long id) {
         if(id==null){
@@ -134,11 +158,20 @@ public class AccountServiceImpl implements AccountService {
         return account;
     }
 
+    /**
+     * The method returns all the data relating to the account making the request
+     * @param req
+     * @return Account
+     */
     @Override
     public Account whoami(HttpServletRequest req) {
         return accountRepository.findByEmail(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req))).get();
     }
 
+    /**
+     * The method returns the list of all users registered in the system
+     * @return List<Account>
+     */
     @Override
     public List<Account> getAccounts() {
         List<Account> accounts = accountRepository.findAll();
@@ -148,6 +181,10 @@ public class AccountServiceImpl implements AccountService {
         return accounts;
     }
 
+    /**
+     * The method adds a product to the favorite list associated with the user making the request
+     * @param titolo
+     */
     @Override
     public void addOnFavoriteList(String titolo) {
         Optional<Prodotto> newProdotto = prodottoRepository.findByTitolo(titolo);
@@ -167,6 +204,10 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
+    /**
+     * The method removes a product from the favorites list associated with the user making the request
+     * @param titolo
+     */
     @Override
     public void deleteProductFromFavoriteList(String titolo) {
         Optional<Prodotto> newProdotto = prodottoRepository.findByTitolo(titolo);
@@ -186,6 +227,11 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
+    /**
+     * The method changes a shipping address of the user making the request
+     * @param indirizzo
+     * @return Account
+     */
     @Override
     public Account changeAddressInformation(String indirizzo) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
@@ -197,6 +243,10 @@ public class AccountServiceImpl implements AccountService {
         return newAccount;
     }
 
+    /**
+     * The method enters the order in the user's order list
+     * @param ordine
+     */
     @Override
     public void addOnOrderList(Ordine ordine) {
         if(ordine == null){
@@ -210,7 +260,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-
+    /**
+     * The method sends an email to perform the password recovery
+     * and generates a new password which will be nothing but the new one
+     * @param email
+     * @throws MessagingException
+     */
     @Override
     public void passwordRecovery(String email) throws MessagingException {
         if(accountRepository.existsAccountByEmail(email)){
@@ -227,6 +282,11 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    /**
+     * The method changes the password to the user currently logged in
+     * @param email
+     * @param password
+     */
     @Override
     public void changePassword(String email, String password) {
         if(password.length()>5){
@@ -251,6 +311,11 @@ public class AccountServiceImpl implements AccountService {
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static SecureRandom rnd = new SecureRandom();
 
+    /**
+     * The method generates a new string
+     * @param len
+     * @return String random password
+     */
     String randomString(int len){
         StringBuilder sb = new StringBuilder(len);
         for(int i = 0; i < len; i++)

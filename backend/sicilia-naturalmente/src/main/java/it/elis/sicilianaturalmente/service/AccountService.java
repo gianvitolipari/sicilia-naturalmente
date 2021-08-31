@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface AccountService {
 
-    public Account getAccount(String nome);
     public Account getAccountByEmail(String email);
     public String signup(Account account);
     public String signin(String email,String password);

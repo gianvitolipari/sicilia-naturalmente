@@ -1,6 +1,7 @@
 package it.elis.sicilianaturalmente.service;
 
 import it.elis.sicilianaturalmente.model.*;
+import it.elis.sicilianaturalmente.repository.OrdineProdottoRepository;
 import it.elis.sicilianaturalmente.repository.OrdineRepository;
 import it.elis.sicilianaturalmente.repository.ProdottoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,9 @@ public class OrdineTest {
     ProdottoRepository prodottoRepository;
 
     @Autowired
+    OrdineProdottoRepository ordineProdottoRepository;
+
+    @Autowired
     OrdineRepository ordineRepository;
 
     private final String titolo = "test";
@@ -45,23 +49,35 @@ public class OrdineTest {
 
     @BeforeEach
     public void beforeEach() {
-
-
+        prodottoRepository.deleteAll();
+        ordineRepository.deleteAll();
+        ordineProdottoRepository.deleteAll();
     }
 
     @Test
-    void getContenutoOrdine() {
-        Prodotto prodotto = new Prodotto().setTitolo(titolo).setQuantita("2").setPrezzo(3F);
+    void createOreder(){
 
-        if(!prodottoRepository.findByTitolo(titolo).isPresent()) {
-            prodottoRepository.save(prodotto.setDeleted(true));
-        }
+        Prodotto prodotto = new Prodotto().setQuantita("2").setPrezzo(3F).setTitolo("titoloTest").setDeleted(false);
+        prodottoRepository.save(prodotto.setQuantita("4"));
+        List<Prodotto> products = new ArrayList<>();
+        products.add(prodotto);
+        PaymentData paymentData = new PaymentData().setPaymentMethod("pm_test1234").setProducts(products).setPrice(3L);
+        ordineService.createOrder(paymentData);
 
-        //prodottoRepository.save(prodotto.setDeleted(false));
+        assertEquals(1,ordineRepository.findAll().size());
+    }
 
-        HashSet<String> titoloProdotto = prodottoRepository.findByTitolo(titolo).stream().map(Prodotto::getTitolo).collect(Collectors.toCollection(HashSet::new));
-
-        assertEquals(Set.of(prodotto.getTitolo()),titoloProdotto);
+    @Test
+    void changeStatus() {
+        Stato stato = Stato.SPEDITO;
+        Prodotto prodotto = new Prodotto().setQuantita("2").setPrezzo(3F).setTitolo("titoloTest").setDeleted(false);
+        prodottoRepository.save(prodotto.setQuantita("4"));
+        List<Prodotto> products = new ArrayList<>();
+        products.add(prodotto);
+        PaymentData paymentData = new PaymentData().setPaymentMethod("pm_test1234").setProducts(products).setPrice(3L);
+        ordineService.createOrder(paymentData);
+        ordineService.changeStatus(1L,stato);
+        assertEquals(stato,ordineRepository.findByIdOrdine(1L).get().getStato());
     }
 
 }

@@ -1,5 +1,6 @@
 package it.elis.sicilianaturalmente.service;
 
+import it.elis.sicilianaturalmente.model.Formato;
 import it.elis.sicilianaturalmente.model.Prodotto;
 import it.elis.sicilianaturalmente.repository.ProdottoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,32 +30,87 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class ProdottoTest {
     @Autowired
-    OrdineService ordineService;
+    ProdottoService prodottoService;
 
     @Autowired
     ProdottoRepository prodottoRepository;
 
-    private final String titolo = "test";
-    private final String defaultPassword = "test1234";
+    private final String titolo = "titoloTest";
+    private final Formato formato = Formato.CORTA;
+    private final String regex = "to";
     private final String defaultName = "test";
 
     @BeforeEach
     public void beforeEach() {
-
+        prodottoRepository.deleteAll();
 
     }
 
     @Test
-    void createProduct() {
-        Prodotto prodotto = new Prodotto().setTitolo(titolo).setQuantita("2").setPrezzo(3F);
+    void getProductByTitolo() {
+        Prodotto prodotto = new Prodotto().setTitolo(titolo).setQuantita("2").setPrezzo(3F).setDeleted(false);
+        prodottoRepository.save(prodotto);
 
-        if(!prodottoRepository.findByTitolo(titolo).isPresent()) {
-            prodottoRepository.save(prodotto.setDeleted(true));
-        }
-
-        HashSet<String> titoloProdotto = prodottoRepository.findByTitolo(titolo).stream().map(Prodotto::getTitolo).collect(Collectors.toCollection(HashSet::new));
-
-        assertEquals(Set.of(prodotto.getTitolo()),titoloProdotto);
+        assertEquals(prodotto,prodottoService.getProductByTitolo(titolo));
     }
+
+    @Test
+    void getAllProduct(){
+        Prodotto prodotto = new Prodotto().setTitolo(titolo).setQuantita("2").setPrezzo(3F).setDeleted(false);
+        prodottoRepository.save(prodotto);
+        List<Prodotto> products = new ArrayList<>();
+        products.add(prodotto);
+
+        assertEquals(products,prodottoService.getAllProduct());
+    }
+
+    @Test
+    void createProduct(){
+        Prodotto prodotto = new Prodotto().setTitolo(titolo).setQuantita("2").setPrezzo(3F).setDeleted(false);
+        prodottoService.createProduct(prodotto);
+
+        assertEquals(1,prodottoRepository.findAll().size());
+    }
+
+    @Test
+    void deleteProduct(){
+        Prodotto prodotto = new Prodotto().setTitolo(titolo).setQuantita("2").setPrezzo(3F).setDeleted(false);
+        prodottoService.createProduct(prodotto);
+        prodottoService.deleteProduct(titolo);
+        assertEquals(true,prodottoRepository.findByTitolo(titolo).get().getDeleted());
+
+    }
+
+    @Test
+    void getFormato() {
+        Prodotto prodotto = new Prodotto().setTitolo(titolo).setQuantita("2").setPrezzo(3F).setDeleted(false).setFormato(formato);
+        prodottoRepository.save(prodotto);
+        List<Prodotto> products = new ArrayList<>();
+        products.add(prodotto);
+        assertEquals(products,prodottoService.getFormato(formato));
+    }
+
+    @Test
+    void updateQuantity() {
+        Long quantita = 10L;
+        Prodotto prodotto = new Prodotto().setTitolo(titolo).setQuantita("20").setPrezzo(3F).setDeleted(false).setFormato(formato);
+        prodottoRepository.save(prodotto);
+        prodottoService.updateQuantity(titolo,quantita);
+        Long quantitaAggiornata = Long.valueOf(prodotto.getQuantita()) - quantita;
+        assertEquals(quantitaAggiornata.toString(),prodottoRepository.findByTitolo(titolo).get().getQuantita());
+    }
+
+    @Test
+    void changeProduct() {
+        String quantita = "10";
+        Float prezzo = 30F;
+        Prodotto prodotto = new Prodotto().setTitolo(titolo).setQuantita("20").setPrezzo(3F).setDeleted(false);
+        prodottoRepository.save(prodotto);
+        prodottoService.changeProduct(titolo,prezzo,quantita);
+        assertEquals(quantita,prodottoRepository.findByTitolo(titolo).get().getQuantita());
+        assertEquals(prezzo,prodottoRepository.findByTitolo(titolo).get().getPrezzo());
+    }
+
+
 
 }

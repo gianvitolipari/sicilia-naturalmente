@@ -1,7 +1,10 @@
 package it.elis.sicilianaturalmente.controller;
 
+import it.elis.sicilianaturalmente.model.Account;
 import it.elis.sicilianaturalmente.model.Email;
 import it.elis.sicilianaturalmente.model.Prodotto;
+import it.elis.sicilianaturalmente.model.Ruolo;
+import it.elis.sicilianaturalmente.repository.AccountRepository;
 import it.elis.sicilianaturalmente.service.AccountService;
 import it.elis.sicilianaturalmente.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +43,9 @@ public class SendEmailTest {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    AccountRepository accountRepository;
+
     private final HttpHeaders headers = new HttpHeaders();
 
     private final String email = "test@gmail.com";
@@ -48,6 +54,9 @@ public class SendEmailTest {
 
     @BeforeEach
     public void beforeEach() {
+        accountRepository.deleteAll();
+        accountRepository.save(new Account().setRuolo(Ruolo.ROLE_ADMIN).setNome(nome).setEmail(email).setPassword(password));
+        Account account = accountRepository.findByEmail(email).get();
         headers.clear();
         String token = accountService.signin(email,password);
         headers.add("Authorization", "Bearer " + token);

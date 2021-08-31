@@ -18,11 +18,11 @@ public class OrdineProdotti {
     @Column(name = "idOrdineProdotto")
     private Long idOrdineProdotto;
 
-    @OneToOne( cascade = {CascadeType.ALL})
+    @OneToOne
     private Prodotto prodotto;
 
     private Long quantita;
 
-    @ManyToOne( cascade = {CascadeType.ALL})
+    @ManyToOne
     private Ordine ordine;
 }

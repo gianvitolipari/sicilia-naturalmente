@@ -1,8 +1,10 @@
 package it.elis.sicilianaturalmente.controller;
 
-import it.elis.sicilianaturalmente.model.*;
+import it.elis.sicilianaturalmente.model.Account;
+import it.elis.sicilianaturalmente.model.Formato;
+import it.elis.sicilianaturalmente.model.Prodotto;
+import it.elis.sicilianaturalmente.model.Ruolo;
 import it.elis.sicilianaturalmente.repository.AccountRepository;
-import it.elis.sicilianaturalmente.security.JwtTokenProvider;
 import it.elis.sicilianaturalmente.service.AccountService;
 import it.elis.sicilianaturalmente.service.ProdottoService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +17,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.*;
-import org.springframework.security.core.parameters.P;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -25,12 +30,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -43,22 +46,19 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class ProductTest {
 
     @MockBean
-    ProdottoService prodottoService;
+    private ProdottoService prodottoService;
 
     @Autowired
-    AccountRepository accountRepository;
+    private AccountService accountService;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
-    AccountService accountService;
+    private PasswordEncoder passwordEncoder;
 
     private final HttpHeaders headers = new HttpHeaders();
 
@@ -68,8 +68,19 @@ public class ProductTest {
 
     @BeforeEach
     public void beforeEach() {
+        accountRepository.deleteAll();
+
+        accountRepository.save(
+            new Account()
+                .setEmail(email)
+                .setPassword(passwordEncoder.encode(password))
+                .setRuolo(Ruolo.ROLE_ADMIN)
+                .setNome(nome)
+                .setCognome(nome)
+        );
+
         headers.clear();
-        String token = accountService.signin(email,password);
+        String token = accountService.signin(email, password);
         headers.add("Authorization", "Bearer " + token);
     }
 
@@ -81,7 +92,7 @@ public class ProductTest {
         given(prodottoService.getAllProduct()).willReturn(products);
 
         ResponseEntity<List<Prodotto>> response;
-        response = restTemplate.exchange("/product/", HttpMethod.GET, null, new ParameterizedTypeReference<List<Prodotto>>() {});
+        response = restTemplate.exchange("/product/", HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -93,8 +104,8 @@ public class ProductTest {
         Prodotto prodotto = new Prodotto().setTitolo("titolo").setPrezzo(3.0F).setQuantita("2");
         given(prodottoService.getProductByTitolo(prodotto.getTitolo())).willReturn(prodotto);
 
-        ResponseEntity<String> response;
-        response = restTemplate.exchange("/product/{id}", HttpMethod.GET, null, String.class,prodotto.getTitolo());
+        ResponseEntity<Prodotto> response;
+        response = restTemplate.exchange("/product/{id}", HttpMethod.GET, null, Prodotto.class, prodotto.getTitolo());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -138,7 +149,7 @@ public class ProductTest {
         given(prodottoService.getFormato(prodotto.getFormato())).willReturn(product);
 
         ResponseEntity<List<Prodotto>> response;
-        response = restTemplate.exchange("/product/format/{formato}", HttpMethod.GET, null, new ParameterizedTypeReference<List<Prodotto>>() {} ,prodotto.getFormato());
+        response = restTemplate.exchange("/product/format/{formato}", HttpMethod.GET, null, new ParameterizedTypeReference<>() {} ,prodotto.getFormato());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -153,7 +164,7 @@ public class ProductTest {
         given(prodottoService.orderByPrice()).willReturn(product);
 
         ResponseEntity<List<Prodotto>> response;
-        response = restTemplate.exchange("/product/price", HttpMethod.GET, null, new ParameterizedTypeReference<List<Prodotto>>() {});
+        response = restTemplate.exchange("/product/price", HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -168,7 +179,7 @@ public class ProductTest {
         given(prodottoService.getByRegex(prodotto.getTitolo())).willReturn(product);
 
         ResponseEntity<List<Prodotto>> response;
-        response = restTemplate.exchange("/product/research/{titolo}", HttpMethod.GET, null, new ParameterizedTypeReference<List<Prodotto>>() {},prodotto.getTitolo());
+        response = restTemplate.exchange("/product/research/{titolo}", HttpMethod.GET, null, new ParameterizedTypeReference<>() {},prodotto.getTitolo());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());

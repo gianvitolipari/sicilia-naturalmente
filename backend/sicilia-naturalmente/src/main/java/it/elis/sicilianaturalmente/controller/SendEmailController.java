@@ -31,7 +31,7 @@ public class SendEmailController {
     @Autowired
     private EmailService emailService;
 
-    @Value("${email.from.address}")
+    @Value("${mail.from.address}")
     private String toEmail;
 
     @RequestMapping(value = "/sendEmail" , method = RequestMethod.POST)

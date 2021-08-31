@@ -2,11 +2,8 @@ package it.elis.sicilianaturalmente.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.MailMessage;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +18,10 @@ import java.io.File;
 @Service
 public class EmailServiceImpl implements EmailService{
 
-    @Autowired
+    @Autowired @Lazy
     private JavaMailSender javaMailSender;
 
-    @Value("${email.from.address}")
+    @Value("${mail.from.address}")
     private String fromAddress;
 
     public void sendMailMultipart(String toEmail, String subject, String message, File file) throws MessagingException {

@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Siclia Naturalmente",
+    "slug": "Siclia-Naturalmente",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/LogoSicilia.png",
+    "splash": {
+      "image": "./assets/LogoSicilia.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "plugins": [
+      [
+        "@stripe/stripe-react-native",
+        {
+          
+          "enableGooglePay": true
+        }
+      ]
+    ],
+    "title":"Sicilia Naturalmente App",
+    "description": "Sicilia Naturalmente è l'applicazione per acquistare tante cose",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.SicliaNaturalmente.SiciliaNaturalmenteApp",
+      "buildNumber": "1.0.0",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.SicliaNaturalmente.SiciliaNaturalmenteApp",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        
+        "foregroundImage": "./assets/LogoSicilia.png",
+        "backgroundColor": "#FFFFFF"
+      }
+      
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+    
+  }
+  
+}

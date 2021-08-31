@@ -22,18 +22,25 @@ public class ProductController {
     @Autowired
     ProdottoService prodottoService;
 
+    //API used in order to return the entire list of products
+    // available within the e-commerce
+
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/")
     public ResponseEntity<List<Prodotto>> getProducts() {
         return ResponseEntity.ok(prodottoService.getAllProduct());
     }
 
+    //API utilizzata al fine di restituire il singolo prodotto,
+    // effettuando una ricerca per il campo obbligatorio titolo
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/{id}")
     public ResponseEntity<Prodotto> getProduct(@PathVariable String id) {
         return ResponseEntity.ok(prodottoService.getProductByTitolo(id));
     }
 
+    //API used in order to create a product, the parameter
+    // passed in @RequestBody is a Product object
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/create")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -47,6 +54,8 @@ public class ProductController {
         }
     }
 
+    //API used in order to delete a product, the search for
+    // the product to be deleted is carried out through the unique title field
     @CrossOrigin(origins = {"http://localhost:3000"})
     @DeleteMapping("/delete/{titolo}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -55,24 +64,30 @@ public class ProductController {
         return ResponseEntity.ok("Product deleted successfully");
     }
 
+    //API used to return a list of products searched through the format field
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/format/{formato}")
     public ResponseEntity<List<Prodotto>> getFormato(@PathVariable Formato formato) {
         return ResponseEntity.ok(prodottoService.getFormato(formato));
     }
 
+    //API used to return a list of products sorted in ascending order referring to the price
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/price")
     public ResponseEntity<List<Prodotto>> orderByPrice() {
         return ResponseEntity.ok(prodottoService.orderByPrice());
     }
 
+    //API used in order to return a list of products searched through a regex
     @CrossOrigin(origins = {"http://localhost:3000"})
     @GetMapping("/research/{titolo}")
     public ResponseEntity<List<Prodotto>> getProductByRegex(@PathVariable String titolo) {
         return ResponseEntity.ok(prodottoService.getByRegex(titolo));
     }
 
+    //API used in order to make changes to the product, in particular
+    // to modify the "price" and "quantity" fields, the search for the product
+    // to be modified is carried out through the unique title field
     @CrossOrigin(origins = {"http://localhost:3000"})
     @PostMapping("/editProduct")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

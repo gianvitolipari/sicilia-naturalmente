@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.util.LinkedMultiValueMap;
@@ -46,6 +47,9 @@ public class SendEmailTest {
     @Autowired
     AccountRepository accountRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private final HttpHeaders headers = new HttpHeaders();
 
     private final String email = "test@gmail.com";
@@ -55,7 +59,7 @@ public class SendEmailTest {
     @BeforeEach
     public void beforeEach() {
         accountRepository.deleteAll();
-        accountRepository.save(new Account().setRuolo(Ruolo.ROLE_ADMIN).setNome(nome).setEmail(email).setPassword(password));
+        accountRepository.save(new Account().setPassword(passwordEncoder.encode(password)).setNome(nome).setEmail(email).setRuolo(Ruolo.ROLE_ADMIN));
         Account account = accountRepository.findByEmail(email).get();
         headers.clear();
         String token = accountService.signin(email,password);

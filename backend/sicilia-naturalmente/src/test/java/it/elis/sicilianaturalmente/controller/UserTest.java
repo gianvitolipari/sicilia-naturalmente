@@ -48,8 +48,14 @@ public class UserTest {
     @Autowired
     ProdottoService prodottoService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @MockBean
     OrdineService ordineService;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     private final HttpHeaders headers = new HttpHeaders();
 
@@ -60,6 +66,9 @@ public class UserTest {
 
     @BeforeEach
     public void beforeEach() {
+
+        accountRepository.deleteAll();
+        accountRepository.save(new Account().setPassword(passwordEncoder.encode(password)).setNome(nome).setEmail(email).setRuolo(Ruolo.ROLE_ADMIN));
         headers.clear();
         String token = accountService.signin(email,password);
         headers.add("Authorization", "Bearer " + token);

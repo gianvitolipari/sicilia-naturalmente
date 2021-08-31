@@ -2,8 +2,11 @@ package it.elis.sicilianaturalmente.model;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.OnDelete;
 
 import javax.persistence.*;
+
+import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
 @NoArgsConstructor
@@ -18,11 +21,11 @@ public class OrdineProdotti {
     @Column(name = "idOrdineProdotto")
     private Long idOrdineProdotto;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.MERGE})
     private Prodotto prodotto;
 
     private Long quantita;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.MERGE})
     private Ordine ordine;
 }

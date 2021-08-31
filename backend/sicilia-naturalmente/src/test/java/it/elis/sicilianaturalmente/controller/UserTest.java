@@ -1,12 +1,13 @@
 package it.elis.sicilianaturalmente.controller;
 
-import it.elis.sicilianaturalmente.model.*;
+import it.elis.sicilianaturalmente.model.Account;
+import it.elis.sicilianaturalmente.model.ContenutoProdotto;
+import it.elis.sicilianaturalmente.model.Ordine;
+import it.elis.sicilianaturalmente.model.Ruolo;
+import it.elis.sicilianaturalmente.model.Stato;
 import it.elis.sicilianaturalmente.repository.AccountRepository;
-import it.elis.sicilianaturalmente.repository.ProdottoRepository;
-import it.elis.sicilianaturalmente.security.JwtTokenProvider;
 import it.elis.sicilianaturalmente.service.AccountService;
 import it.elis.sicilianaturalmente.service.OrdineService;
-import it.elis.sicilianaturalmente.service.ProdottoService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -43,19 +47,16 @@ public class UserTest {
     private TestRestTemplate restTemplate;
 
     @Autowired
-    AccountService accountService;
+    private AccountService accountService;
+
+    @MockBean
+    private OrdineService ordineService;
 
     @Autowired
-    ProdottoService prodottoService;
+    private AccountRepository accountRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @MockBean
-    OrdineService ordineService;
-
-    @Autowired
-    AccountRepository accountRepository;
 
     private final HttpHeaders headers = new HttpHeaders();
 
@@ -66,11 +67,28 @@ public class UserTest {
 
     @BeforeEach
     public void beforeEach() {
-
         accountRepository.deleteAll();
-        accountRepository.save(new Account().setPassword(passwordEncoder.encode(password)).setNome(nome).setEmail(email).setRuolo(Ruolo.ROLE_ADMIN));
+
+        accountRepository.save(
+            new Account()
+                .setEmail(email)
+                .setPassword(passwordEncoder.encode(password))
+                .setRuolo(Ruolo.ROLE_ADMIN)
+                .setNome(nome)
+                .setCognome(nome)
+        );
+
+        accountRepository.save(
+            new Account()
+                .setEmail(emailRiserva)
+                .setPassword(passwordEncoder.encode(password))
+                .setRuolo(Ruolo.ROLE_ADMIN)
+                .setNome(nome)
+                .setCognome(nome)
+        );
+
         headers.clear();
-        String token = accountService.signin(email,password);
+        String token = accountService.signin(email, password);
         headers.add("Authorization", "Bearer " + token);
     }
 

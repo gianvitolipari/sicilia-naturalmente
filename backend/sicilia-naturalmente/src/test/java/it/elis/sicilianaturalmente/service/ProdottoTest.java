@@ -2,6 +2,8 @@ package it.elis.sicilianaturalmente.service;
 
 import it.elis.sicilianaturalmente.model.Formato;
 import it.elis.sicilianaturalmente.model.Prodotto;
+import it.elis.sicilianaturalmente.repository.OrdineProdottoRepository;
+import it.elis.sicilianaturalmente.repository.OrdineRepository;
 import it.elis.sicilianaturalmente.repository.ProdottoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +35,12 @@ public class ProdottoTest {
     ProdottoService prodottoService;
 
     @Autowired
+    OrdineProdottoRepository ordineProdottoRepository;
+
+    @Autowired
+    OrdineRepository ordineRepository;
+
+    @Autowired
     ProdottoRepository prodottoRepository;
 
     private final String titolo = "titoloTest";
@@ -42,8 +50,9 @@ public class ProdottoTest {
 
     @BeforeEach
     public void beforeEach() {
+        ordineProdottoRepository.deleteAll();
+        ordineRepository.deleteAll();
         prodottoRepository.deleteAll();
-
     }
 
     @Test

@@ -3,7 +3,6 @@ package it.elis.sicilianaturalmente.controller;
 import com.stripe.model.Customer;
 import it.elis.sicilianaturalmente.model.Account;
 import it.elis.sicilianaturalmente.model.PaymentMethodData;
-import it.elis.sicilianaturalmente.model.Prodotto;
 import it.elis.sicilianaturalmente.model.Ruolo;
 import it.elis.sicilianaturalmente.repository.AccountRepository;
 import it.elis.sicilianaturalmente.service.AccountService;
@@ -17,8 +16,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -39,19 +41,19 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class StripeTest {
     @MockBean
-    StripeService stripeService;
+    private StripeService stripeService;
 
     @Autowired
-    AccountService accountService;
-
-    @Autowired
-    AccountRepository accountRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private AccountService accountService;
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private final HttpHeaders headers = new HttpHeaders();
 
@@ -62,9 +64,18 @@ public class StripeTest {
     @BeforeEach
     public void beforeEach() {
         accountRepository.deleteAll();
-        accountRepository.save(new Account().setPassword(passwordEncoder.encode(password)).setNome(nome).setEmail(email).setRuolo(Ruolo.ROLE_ADMIN));
+
+        accountRepository.save(
+            new Account()
+                .setEmail(email)
+                .setPassword(passwordEncoder.encode(password))
+                .setRuolo(Ruolo.ROLE_ADMIN)
+                .setNome(nome)
+                .setCognome(nome)
+        );
+
         headers.clear();
-        String token = accountService.signin(email,password);
+        String token = accountService.signin(email, password);
         headers.add("Authorization", "Bearer " + token);
     }
 

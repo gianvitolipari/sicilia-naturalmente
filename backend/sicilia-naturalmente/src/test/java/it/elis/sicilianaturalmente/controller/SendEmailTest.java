@@ -2,7 +2,6 @@ package it.elis.sicilianaturalmente.controller;
 
 import it.elis.sicilianaturalmente.model.Account;
 import it.elis.sicilianaturalmente.model.Email;
-import it.elis.sicilianaturalmente.model.Prodotto;
 import it.elis.sicilianaturalmente.model.Ruolo;
 import it.elis.sicilianaturalmente.repository.AccountRepository;
 import it.elis.sicilianaturalmente.service.AccountService;
@@ -36,16 +35,16 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class SendEmailTest {
 
     @MockBean
-    EmailService emailService;
+    private EmailService emailService;
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Autowired
-    AccountService accountService;
+    private AccountService accountService;
 
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -59,10 +58,18 @@ public class SendEmailTest {
     @BeforeEach
     public void beforeEach() {
         accountRepository.deleteAll();
-        accountRepository.save(new Account().setPassword(passwordEncoder.encode(password)).setNome(nome).setEmail(email).setRuolo(Ruolo.ROLE_ADMIN));
-        Account account = accountRepository.findByEmail(email).get();
+
+        accountRepository.save(
+            new Account()
+                .setEmail(email)
+                .setPassword(passwordEncoder.encode(password))
+                .setRuolo(Ruolo.ROLE_ADMIN)
+                .setNome(nome)
+                .setCognome(nome)
+        );
+
         headers.clear();
-        String token = accountService.signin(email,password);
+        String token = accountService.signin(email, password);
         headers.add("Authorization", "Bearer " + token);
     }
 

@@ -26,8 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,8 +114,6 @@ public class ProductTest {
     public void createProduct() {
         String responseText="Product creation successful";
         Prodotto prodotto = new Prodotto().setTitolo("titolo").setPrezzo(3.0F).setQuantita("2");
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("prodotto", prodotto);
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Prodotto> httpEntity = new HttpEntity<>(prodotto,headers);
 

@@ -52,10 +52,10 @@ public class OrdineServiceImpl implements OrdineService{
                 .setPrezzoTot(paymentData.getPrice())
                 .setStatoPagamento(StatoPagamento.NON_PAGATO)
                 .setStato(Stato.IN_PREPARAZIONE);
-        ordineRepository.save(ordine);
+        ordine = ordineRepository.save(ordine);
 
         List<OrdineProdotti> prodotti = new ArrayList<>();
-        Prodotto prodotto = new Prodotto();
+        Prodotto prodotto;
         Long quantita;
         for (int i=0; i<paymentData.getProducts().size();i++) {
             prodotto = prodottoRepository.findByTitolo(paymentData.getProducts().get(i).getTitolo()).get();
